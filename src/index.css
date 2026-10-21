@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-ink: #101828;
+    --color-navy: #111A2E;
+    --color-primary: #315CF5;
+    --color-primary-dark: #2045D8;
+    --color-mint: #7EF0D0;
+    --color-canvas: #F7F8FC;
+    --color-muted: #667085;
+    --color-border: #E5E8F0;
+    --color-soft-blue: #EAF0FF;
+    --font-heading: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    margin: 0;
+    padding: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.025em;
+  }
+}
+
+/* Glass & Glow utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(229, 232, 240, 0.8);
+}
+
+.glass-panel-dark {
+  background: rgba(17, 26, 46, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.shadow-flovig {
+  box-shadow: 0 20px 40px -15px rgba(17, 26, 46, 0.07), 0 0 1px 1px rgba(17, 26, 46, 0.05);
+}
+
+.shadow-flovig-lg {
+  box-shadow: 0 30px 60px -12px rgba(17, 26, 46, 0.12), 0 10px 20px -5px rgba(49, 92, 245, 0.08), 0 0 1px 1px rgba(229, 232, 240, 0.8);
+}
+
+.shadow-flovig-floating {
+  box-shadow: 0 25px 50px -12px rgba(17, 26, 46, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.badge-glow {
+  box-shadow: 0 0 20px rgba(49, 92, 245, 0.35);
+}
+
+.mint-glow {
+  box-shadow: 0 0 24px rgba(126, 240, 208, 0.25);
+}
+
+/* Custom scrollbar for mockups */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #D0D5DD;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #98A2B3;
+}
+
+/* Subtle grid pattern */
+.bg-grid-pattern {
+  background-image: radial-gradient(rgba(49, 92, 245, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.bg-dark-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Gradient text */
+.text-gradient-blue {
+  background: linear-gradient(135deg, #315CF5 0%, #1539C2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-mint {
+  background: linear-gradient(135deg, #7EF0D0 0%, #315CF5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
