@@ -1,189 +1,177 @@
-import { useLayoutEffect, useRef } from 'react'
-import { Container } from '../components/layout/Container'
+import { useLayoutEffect, useRef, useState } from 'react'
+import { ChevronRight, Play, Pause } from 'lucide-react'
 import { GradientBadge } from '../components/ui/GradientBadge'
-import { HeroVideoShowcase } from '../components/product/HeroVideoShowcase'
 import { gsap } from '../lib/gsap'
+
+// Logos for social proof
+function PartnerLogos() {
+  return (
+    <div className="mt-10 sm:mt-12 flex flex-wrap items-center justify-center gap-8 sm:gap-12 md:gap-16 opacity-45 grayscale hover:grayscale-0 transition-all duration-300">
+      {/* Novartis */}
+      <div className="flex items-center gap-1.5 text-slate-800 font-bold tracking-tight text-sm sm:text-base">
+        <svg className="w-5 h-5 text-orange-500" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.2 0 2.35-.21 3.42-.6-4.57-1.12-7.92-5.18-7.92-10 0-3.64 1.9-6.83 4.74-8.63C11.45 2.27 11.72 2 12 2z" />
+        </svg>
+        <span>NOVARTIS</span>
+      </div>
+
+      {/* Continental */}
+      <div className="flex items-center gap-1.5 text-slate-800 font-extrabold tracking-wider text-sm sm:text-base font-serif italic">
+        <span>Continental<span className="not-italic text-xs font-mono font-normal">®</span></span>
+      </div>
+
+      {/* Paramount */}
+      <div className="flex items-center gap-1.5 text-slate-800 font-serif font-bold text-sm sm:text-base">
+        <svg className="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L6 18h12L12 2zm0 4.5l3.5 9.5h-7L12 6.5z" />
+          <circle cx="12" cy="3" r="1" />
+          <circle cx="8" cy="6" r="0.8" />
+          <circle cx="16" cy="6" r="0.8" />
+          <circle cx="5" cy="11" r="0.8" />
+          <circle cx="19" cy="11" r="0.8" />
+        </svg>
+        <span className="tracking-wide">Paramount</span>
+      </div>
+
+      {/* WSP */}
+      <div className="flex items-center gap-1.5 text-slate-900 font-black tracking-widest text-sm sm:text-base">
+        <span className="text-red-500 font-black">\\\</span>
+        <span>WSP</span>
+      </div>
+
+      {/* Hewlett Packard Enterprise */}
+      <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
+        <div className="w-4 h-3.5 border-2 border-emerald-500 rounded-xs" />
+        <div className="leading-tight text-left">
+          <span className="block font-bold text-[11px] sm:text-xs tracking-tight">Hewlett Packard</span>
+          <span className="block text-[9px] text-slate-500 tracking-wider uppercase">Enterprise</span>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export function HeroSection() {
   const heroRef = useRef(null)
-  const ctaRef = useRef(null)
-  const shineRef = useRef(null)
-  const underlineRef = useRef(null)
-  const sparkRef = useRef(null)
+  const videoRef = useRef(null)
+  const [isPaused, setIsPaused] = useState(false)
 
   const scrollTo = (selector) => {
     const el = document.querySelector(selector)
     if (el) el.scrollIntoView({ behavior: 'smooth' })
   }
 
-  // useLayoutEffect: state awal animasi dipasang sebelum browser paint -> tidak ada kedip
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia()
-
-      // ───────────── Intro (semua perangkat, kecuali reduced motion)
       mm.add('(prefers-reduced-motion: no-preference)', () => {
-        const path = underlineRef.current
-        const len = path.getTotalLength()
-        gsap.set(path, { strokeDasharray: len, strokeDashoffset: len })
-        gsap.set(sparkRef.current, { autoAlpha: 0 })
-
-        const drawUnderline = () => {
-          const t = gsap.timeline()
-          t.set(sparkRef.current, { autoAlpha: 1 })
-            .to(path, { strokeDashoffset: 0, duration: 1.1, ease: 'power2.inOut' }, 0)
-            // titik cahaya berjalan mengikuti garis (MotionPath)
-            .to(sparkRef.current, {
-              motionPath: { path, align: path, alignOrigin: [0.5, 0.5] },
-              duration: 1.1,
-              ease: 'power2.inOut',
-            }, 0)
-            .to(sparkRef.current, { autoAlpha: 0, scale: 2.2, duration: 0.35 }, '-=0.1')
-          return t
-        }
-
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-        tl.from('.hero-badge', { y: 16, autoAlpha: 0, duration: 0.5, delay: 0.1 })
-          .from('.hero-line-inner', { yPercent: 110, duration: 0.9, stagger: 0.12 }, '-=0.2')
-          .add(drawUnderline(), '-=0.35')
-          .from('.hero-subhead', { y: 16, autoAlpha: 0, duration: 0.6 }, '-=0.9')
-          .from('.hero-cta > *', { y: 14, autoAlpha: 0, duration: 0.5, stagger: 0.08 }, '-=0.5')
-          .from('.hero-window-reveal', { y: 60, autoAlpha: 0, duration: 1, ease: 'power2.out' }, '-=0.3')
-          .from('.hero-chapter', { y: 12, autoAlpha: 0, duration: 0.4, stagger: 0.05 }, '-=0.5')
-
-        // kilau tombol CTA berulang
-        gsap.fromTo(
-          shineRef.current,
-          { xPercent: -150 },
-          { xPercent: 350, duration: 1, ease: 'power2.inOut', repeat: -1, repeatDelay: 3.5, delay: 2.2 }
-        )
-      })
-
-      // ───────────── Desktop: efek scroll (scrub) + parallax
-      mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
-        gsap.set('.hero-window-wrap', { transformPerspective: 1600, transformOrigin: '50% 0%' })
-        // jendela produk "terbangun": miring -> rata, kecil -> penuh, mengikuti scroll
-        gsap.fromTo(
-          '.hero-window',
-          { rotateX: 9, scale: 0.93, y: 30 },
-          {
-            rotateX: 0, scale: 1, y: 0, ease: 'none',
-            scrollTrigger: { trigger: '.hero-window-wrap', start: 'top 92%', end: 'top 32%', scrub: 0.6 },
-          }
-        )
-        gsap.to('.hero-glow-a', {
-          yPercent: -30, ease: 'none',
-          scrollTrigger: { trigger: heroRef.current, start: 'top top', end: 'bottom top', scrub: true },
-        })
-      })
-
-      // ───────────── Mobile: cukup fade-in saat masuk layar
-      mm.add('(max-width: 1023px) and (prefers-reduced-motion: no-preference)', () => {
-        gsap.from('.hero-window', {
-          y: 24, autoAlpha: 0, duration: 0.7, ease: 'power2.out',
-          scrollTrigger: { trigger: '.hero-window-wrap', start: 'top 90%', once: true },
-        })
-      })
-
-      // ───────────── Tombol magnetic + kilau saat hover (perangkat hover saja)
-      mm.add('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)', () => {
-        const btn = ctaRef.current
-        const xTo = gsap.quickTo(btn, 'x', { duration: 0.4, ease: 'power3' })
-        const yTo = gsap.quickTo(btn, 'y', { duration: 0.4, ease: 'power3' })
-        const move = (e) => {
-          const r = btn.getBoundingClientRect()
-          xTo((e.clientX - (r.left + r.width / 2)) * 0.25)
-          yTo((e.clientY - (r.top + r.height / 2)) * 0.35)
-        }
-        const leave = () => { xTo(0); yTo(0) }
-        btn.addEventListener('mousemove', move)
-        btn.addEventListener('mouseleave', leave)
-        return () => {
-          btn.removeEventListener('mousemove', move)
-          btn.removeEventListener('mouseleave', leave)
-        }
+        tl.from('.hero-badge-el', { y: 16, autoAlpha: 0, duration: 0.5, delay: 0.1 })
+          .from('.hero-headline-el', { y: 24, autoAlpha: 0, duration: 0.8 }, '-=0.2')
+          .from('.hero-sub-el', { y: 16, autoAlpha: 0, duration: 0.6 }, '-=0.4')
+          .from('.hero-cta-el', { y: 16, autoAlpha: 0, duration: 0.5 }, '-=0.4')
+          .from('.hero-logos-el', { autoAlpha: 0, duration: 0.8 }, '-=0.2')
+          .from('.hero-media-wrap', { y: 24, autoAlpha: 0, duration: 0.9 }, '-=0.4')
       })
     }, heroRef)
 
     return () => ctx.revert()
   }, [])
 
-  return (
-    <section ref={heroRef} className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-white">
-      {/* satu cahaya halus saja, seperti ClickUp: putih bersih */}
-      <Container className="relative z-10">
-        {/* Badge berisi kabar, border gradien bergerak (default 1 ruas, hover penuh) */}
-        <GradientBadge className="hero-badge" onClick={() => scrollTo('#fitur')}>
-          {/* <span className="rounded-full bg-[#EAF0FF] px-2 py-0.5 text-[11px] font-bold text-[#2045D8]">Baru</span> */}
-          The Best for Agile Product Management
-        </GradientBadge>
+  const handleTogglePlay = () => {
+    if (!videoRef.current) return
+    if (videoRef.current.paused) {
+      videoRef.current.play().catch(() => {})
+      setIsPaused(false)
+    } else {
+      videoRef.current.pause()
+      setIsPaused(true)
+    }
+  }
 
-        {/* Headline rata kiri, dua baris, masking reveal */}
-        <h1 className="mt-7 max-w-6xl text-[2.5rem] sm:text-6xl lg:text-[4.4rem] font-extrabold tracking-[-0.035em] leading-[1.04] text-[#101828]">
-          <span className="block overflow-hidden pb-[0.12em]">
-            <span className="hero-line-inner block">From planning to launch,</span>
-          </span>
-          <span className="block">
-            <span className="relative inline-block">
-              <span className="block overflow-hidden pb-[0.12em]">
-                <span className="hero-line-inner block text-[#315CF5]">everything flows.</span>
-              </span>
-              {/* garis bawah SVG yang tergambar + titik cahaya, selebar teks */}
-              <svg
-                viewBox="0 0 400 16"
-                fill="none"
-                aria-hidden="true"
-                className="absolute left-0 -bottom-1 w-full h-auto overflow-visible"
-              >
-                <defs>
-                  <linearGradient id="hero-underline" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#315CF5" />
-                    <stop offset="100%" stopColor="#7EF0D0" />
-                  </linearGradient>
-                </defs>
-                <path
-                  ref={underlineRef}
-                  d="M3 11 C 70 2, 130 15, 200 7 S 330 12, 397 4"
-                  stroke="url(#hero-underline)"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
-          </span>
+  return (
+    <section ref={heroRef} className="relative pt-28 sm:pt-36 md:pt-40 pb-16 sm:pb-24 overflow-hidden bg-white text-center">
+      {/* Top Container: Centered Heading, Subheading, CTAs & Logos */}
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6">
+        {/* Animated Gradient Badge (Restored with moving color beam) */}
+        <div className="hero-badge-el flex justify-center">
+          <GradientBadge onClick={() => scrollTo('#features')}>
+            The Best of Agile Product Management
+          </GradientBadge>
+        </div>
+
+        {/* Main Headline */}
+        <h1 className="hero-headline-el mt-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.08] text-slate-950">
+          Good Work Starts<br />
+          With Better <span className="text-[#00A3FF]">Workflow.</span>
         </h1>
 
-        <p className="hero-subhead mt-6 max-w-2xl text-base sm:text-lg md:text-xl leading-relaxed text-[#475467]">
-          Agile sprints, milestones, and Gantt charts—all connected to chats and tickets, so your team never loses context.
+        {/* Subtitle */}
+        <p className="hero-sub-el mt-5 max-w-2xl mx-auto text-slate-600 text-sm sm:text-base md:text-lg leading-relaxed">
+          Manage projects, coordinate your team, track sales, and streamline business operations — all in one platform. With Flovig, everything you need to get work done lives in one place.
         </p>
 
-        {/* CTA gelap + catatan kecil di sampingnya, seperti ClickUp */}
-        <div className="hero-cta mt-4 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
+        {/* CTA Buttons */}
+        <div className="hero-cta-el mt-7 sm:mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
           <button
-            ref={ctaRef}
             type="button"
             onClick={() => scrollTo('#pricing')}
-            className="relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-[#111A2E] px-5 py-3 sm:px-7 sm:py-4 text-base font-bold text-white shadow-xl shadow-[#111A2E]/25 cursor-pointer will-change-transform"
+            className="px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-[#0B1527] hover:bg-black text-white text-xs sm:text-sm font-semibold inline-flex items-center gap-2 shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group"
           >
-            <span
-              ref={shineRef}
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 -skew-x-[20deg] bg-gradient-to-r from-transparent via-white/35 to-transparent"
-            />
-            <span className="relative text-sm sm:text-lg">Start Now. It's FREE!</span>
+            <span>Get Started - It's Free!</span>
+            <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
           </button>
 
-          <div className="text-xs leading-snug text-[#667085]">
-            <div>One workspace.</div>
-            <div>Multiple large-scale projects.</div>
-          </div>
+          <button
+            type="button"
+            onClick={() => scrollTo('#alur-kerja')}
+            className="px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-xs sm:text-sm font-medium shadow-xs hover:border-slate-400 transition-all duration-200 cursor-pointer"
+          >
+            See How It Works
+          </button>
         </div>
 
-        {/* Jendela video: reveal (intro) dan .hero-window (scroll) dipisah agar tidak bentrok */}
-        <div className="hero-window-reveal mt-8 md:mt-8 max-w-6xl">
-          <HeroVideoShowcase onDemoClick={() => scrollTo('#playground')} />
+        {/* Social Proof Logos */}
+        <div className="hero-logos-el">
+          <PartnerLogos />
         </div>
-      </Container>
+      </div>
+
+      {/* Video Container: Contained like other sections, preserving original 16:9 frame & resolution */}
+      <div className="hero-media-wrap mt-12 sm:mt-16 max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="relative rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 bg-white border border-slate-200/90 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
+          <div
+            className="relative rounded-xl sm:rounded-2xl overflow-hidden bg-slate-950 aspect-video group cursor-pointer"
+            onClick={handleTogglePlay}
+          >
+            <video
+              ref={videoRef}
+              src="/asset/flovig-hero-full.mp4"
+              poster="/asset/flovig-hero-full-poster.webp"
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover block"
+            />
+
+            {/* Subtle Minimal Pause/Play overlay pill */}
+            <div className="absolute bottom-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleTogglePlay()
+                }}
+                className="px-3.5 py-1.5 rounded-full bg-slate-900/85 backdrop-blur-md text-white text-xs font-medium flex items-center gap-1.5 shadow-lg hover:bg-slate-950 transition-colors"
+              >
+                {isPaused ? <Play className="w-3.5 h-3.5 fill-current" /> : <Pause className="w-3.5 h-3.5" />}
+                <span>{isPaused ? 'Play Video' : 'Pause'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   )
 }

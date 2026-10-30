@@ -1,187 +1,179 @@
-import { Container } from './Container'
 import { FlovigLogo } from '../ui/FlovigLogo'
-import { MapPin, Mail, Phone } from 'lucide-react'
+import { Phone, Mail, MapPin } from 'lucide-react'
 
-/* =========================================================================
-   Flovig — Footer (clean, putih)
-   Isi CONTACT & SOCIALS di bawah. Item dengan value kosong ('') tidak ditampilkan.
-   ========================================================================= */
+const PRODUCT_LINKS = [
+  { label: 'Features', href: '#features' },
+  { label: 'Products', href: '#alur-kerja' },
+  { label: 'Preview', href: '#sync' },
+  { label: 'Pricing', href: '#pricing' },
+  { label: 'QnA', href: '#faq' },
+]
 
-const NAV_COLUMNS = [
+const SOLUTION_LINKS = [
+  { label: 'Agency & Creative', href: '#use-cases' },
+  { label: 'Software & Product', href: '#use-cases' },
+  { label: 'Operations', href: '#use-cases' },
+  { label: 'Professional Services', href: '#use-cases' },
+]
+
+const SOCIAL_LINKS = [
   {
-    title: 'Produk',
-    links: [
-      { label: 'Fitur', href: '#features' },
-      { label: 'Cara Kerja', href: '#cara-kerja' },
-      { label: 'Beban Kerja', href: '#workload' },
-      { label: 'Portal Klien', href: '#client-portal' },
-      { label: 'Harga', href: '#pricing' },
-      { label: 'FAQ', href: '#faq' },
-    ],
+    name: 'Facebook',
+    href: 'https://facebook.com',
+    icon: (
+      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+        <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H7v-3h3V9.5C10 6.46 11.82 5 14.5 5c1.28 0 2.4.1 2.4.1v2.6h-1.35c-1.48 0-1.95.92-1.95 1.87V12h3.2l-.5 3h-2.7v6.8c4.56-.93 8-4.96 8-9.8z" />
+      </svg>
+    ),
   },
   {
-    title: 'Solusi Tim',
-    links: [
-      { label: 'Agency & Creative', href: '#use-cases' },
-      { label: 'Software & Product', href: '#use-cases' },
-      { label: 'Operations', href: '#use-cases' },
-      { label: 'Professional Services', href: '#use-cases' },
-    ],
+    name: 'Twitter',
+    href: 'https://twitter.com',
+    icon: (
+      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'LinkedIn',
+    href: 'https://linkedin.com',
+    icon: (
+      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.45 1.45 0 1 0 0-2.9 1.45 1.45 0 0 0 0 2.9m1.39 9.74v-8.37H5.07v8.37h2.78z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Instagram',
+    href: 'https://instagram.com',
+    icon: (
+      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
+      </svg>
+    ),
   },
 ]
-
-const CONTACT = {
-  address: 'Enablerspace.id, Kebayoran Lama, Jakarta Selatan',
-  mapsUrl: 'https://maps.app.goo.gl/NMFYRh6x2uAfrxmM9',
-  email: '', // contoh: 'hello@flovig.com'
-  phone: '', // contoh: '+62 812-0000-0000'
-}
-
-const SOCIALS = [
-  { name: 'Instagram', href: '#', icon: 'instagram' },
-  { name: 'LinkedIn', href: '#', icon: 'linkedin' },
-  { name: 'X', href: '#', icon: 'x' },
-  { name: 'Facebook', href: '#', icon: 'facebook' },
-]
-
-const LEGAL = [
-  { label: 'Kebijakan Privasi', href: '#' },
-  { label: 'Syarat & Ketentuan', href: '#' },
-]
-
-/* ---------- social icons (stroke, currentColor) ---------- */
-function SocialIcon({ name }) {
-  const common = {
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.8,
-    strokeLinecap: 'round',
-    strokeLinejoin: 'round',
-    className: 'h-[18px] w-[18px]',
-    'aria-hidden': true,
-  }
-  switch (name) {
-    case 'instagram':
-      return (
-        <svg {...common}>
-          <rect x="2.5" y="2.5" width="19" height="19" rx="5" />
-          <circle cx="12" cy="12" r="4" />
-          <path d="M17.5 6.5h.01" />
-        </svg>
-      )
-    case 'linkedin':
-      return (
-        <svg {...common}>
-          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
-          <rect x="2" y="9" width="4" height="12" />
-          <circle cx="4" cy="4" r="2" />
-        </svg>
-      )
-    case 'x':
-      return (
-        <svg {...common}>
-          <path d="M4 4h4.5L20 20h-4.5z" />
-          <path d="M20 4l-6.8 7.6M4 20l6.8-7.6" />
-        </svg>
-      )
-    case 'facebook':
-      return (
-        <svg {...common}>
-          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-        </svg>
-      )
-    default:
-      return null
-  }
-}
-
-const linkCls = 'text-[15px] text-[#344054] hover:text-[#315CF5] transition-colors'
 
 export function Footer() {
-  const contactItems = [
-    CONTACT.address && { icon: MapPin, text: CONTACT.address, href: CONTACT.mapsUrl, external: true },
-    CONTACT.email && { icon: Mail, text: CONTACT.email, href: `mailto:${CONTACT.email}` },
-    CONTACT.phone && { icon: Phone, text: CONTACT.phone, href: `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}` },
-  ].filter(Boolean)
+  const handleNavClick = (href) => {
+    const el = document.querySelector(href)
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
+  }
 
   return (
-    <footer className="bg-white border-t border-[#EAECF0] text-[#101828]">
-      <Container>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-x-10 gap-y-12 pt-16 pb-14">
-          {/* Brand */}
-          <div className="sm:col-span-2 lg:col-span-4">
-            <FlovigLogo size="md" dark={false} />
-            <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-[#667085]">
-              Workspace manajemen proyek dan pekerjaan terpadu untuk tim modern. Satukan perencanaan, pelacakan task,
-              beban kerja, dan komunikasi klien tanpa kehilangan konteks.
+    <footer className="bg-white border-t border-slate-100 pt-16 pb-12 sm:pt-20 sm:pb-16 text-slate-600">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 items-start">
+          {/* Column 1: Brand & Bio & Socials (Matches UI Image 3) */}
+          <div className="lg:col-span-5 flex flex-col items-start pr-0 lg:pr-6">
+            <a href="#" className="flex items-center group">
+              <FlovigLogo size="md" />
+            </a>
+
+            <p className="mt-4 text-xs sm:text-sm text-slate-500 leading-relaxed max-w-sm">
+              Unified project and work management workspace for modern teams. Unite planning, task tracking, workload, and client communication without losing context.
             </p>
-          </div>
 
-          {/* 2 kolom submenu */}
-          {NAV_COLUMNS.map((col) => (
-            <div key={col.title} className="lg:col-span-2">
-              <h4 className="text-lg font-semibold text-[#101828]">{col.title}</h4>
-              <ul className="mt-5 space-y-3">
-                {col.links.map((l) => (
-                  <li key={l.label}>
-                    <a href={l.href} className={linkCls}>{l.label}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-
-          {/* Kontak + sosial media */}
-          <div className="sm:col-span-2 lg:col-span-4">
-            <h4 className="text-lg font-semibold text-[#101828]">Hubungi Kami</h4>
-            <ul className="mt-5 space-y-3">
-              {contactItems.map(({ icon: Icon, text, href, external }) => (
-                <li key={text}>
-                  <a
-                    href={href}
-                    {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                    className={`group inline-flex items-start gap-2.5 ${linkCls}`}
-                  >
-                    <Icon className="mt-[3px] h-4 w-4 shrink-0 text-[#98A2B3] group-hover:text-[#315CF5] transition-colors" />
-                    <span>{text}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-7 flex items-center gap-3">
-              {SOCIALS.map((s) => (
+            {/* Social Icons Row */}
+            <div className="mt-6 flex items-center gap-4 text-slate-600">
+              {SOCIAL_LINKS.map((s) => (
                 <a
                   key={s.name}
                   href={s.href}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="noreferrer"
                   aria-label={s.name}
-                  title={s.name}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[#EAECF0] text-[#344054] transition-colors hover:border-[#315CF5] hover:text-[#315CF5]"
+                  className="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#0099FF] hover:text-white flex items-center justify-center transition-all duration-200"
                 >
-                  <SocialIcon name={s.icon} />
+                  {s.icon}
                 </a>
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Bottom bar */}
-        <div className="flex flex-col-reverse gap-4 border-t border-[#EAECF0] py-8 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-[#667085]">
-            © {new Date().getFullYear()} Flovig Work Technologies. Seluruh hak cipta dilindungi.
-          </p>
-          <nav className="flex flex-wrap items-center gap-x-6 gap-y-2" aria-label="Legal">
-            {LEGAL.map((l) => (
-              <a key={l.label} href={l.href} className="text-sm text-[#344054] hover:text-[#315CF5] transition-colors">
-                {l.label}
-              </a>
-            ))}
-          </nav>
+          {/* Column 2: Product Links */}
+          <div className="lg:col-span-2">
+            <h4 className="text-sm font-bold text-slate-900 tracking-tight mb-4">
+              Product
+            </h4>
+            <ul className="space-y-3 text-xs sm:text-[13px]">
+              {PRODUCT_LINKS.map((item) => (
+                <li key={item.label}>
+                  <a
+                    href={item.href}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      handleNavClick(item.href)
+                    }}
+                    className="text-slate-500 hover:text-slate-900 transition-colors"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 3: Solution Links */}
+          <div className="lg:col-span-2">
+            <h4 className="text-sm font-bold text-slate-900 tracking-tight mb-4">
+              Solution
+            </h4>
+            <ul className="space-y-3 text-xs sm:text-[13px]">
+              {SOLUTION_LINKS.map((item) => (
+                <li key={item.label}>
+                  <a
+                    href={item.href}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      handleNavClick(item.href)
+                    }}
+                    className="text-slate-500 hover:text-slate-900 transition-colors"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 4: Contact Details (Matches UI Image 3) */}
+          <div className="lg:col-span-3">
+            <h4 className="text-sm font-bold text-slate-900 tracking-tight mb-4">
+              Contact
+            </h4>
+            <ul className="space-y-3.5 text-xs sm:text-[13px]">
+              <li className="flex items-center gap-2.5 text-slate-600">
+                <Phone className="w-4 h-4 text-slate-800 shrink-0" />
+                <span>(406) 555-0120</span>
+              </li>
+              <li className="flex items-center gap-2.5 text-slate-600">
+                <Mail className="w-4 h-4 text-slate-800 shrink-0" />
+                <a
+                  href="mailto:Hey@flovig.com"
+                  className="hover:text-slate-900 transition-colors"
+                >
+                  Hey@flovig.com
+                </a>
+              </li>
+              <li className="flex items-start gap-2.5 text-slate-600">
+                <MapPin className="w-4 h-4 text-slate-800 shrink-0 mt-0.5" />
+                <a
+                  href="https://maps.app.goo.gl/NMFYRh6x2uAfrxmM9"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-slate-900 transition-colors underline decoration-slate-300 underline-offset-2 leading-relaxed"
+                >
+                  Enablerspace.id, Kebayoran Lama, Jakarta Selatan
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-      </Container>
+      </div>
     </footer>
   )
 }
+
+export default Footer

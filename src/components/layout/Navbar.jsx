@@ -1,13 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Container } from './Container'
-import { Button } from '../ui/Button'
 import { FlovigLogo } from '../ui/FlovigLogo'
-import { 
-  Menu, 
-  X, 
-  ChevronRight, 
-  ArrowRight
-} from 'lucide-react'
+import { Menu, X, ChevronRight, ArrowRight } from 'lucide-react'
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -15,7 +8,7 @@ export function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 7)
+      setScrolled(window.scrollY > 20)
     }
     handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
@@ -23,12 +16,11 @@ export function Navbar() {
   }, [])
 
   const navLinks = [
-    { label: 'Fitur', href: '#features' },
-    { label: 'Cara Kerja', href: '#cara-kerja' },
-    { label: 'Preview', href: '#playground' },
-    { label: 'Solusi', href: '#use-cases' },
-    { label: 'Harga', href: '#pricing' },
-    { label: 'FAQ', href: '#faq' }
+    { label: 'Features', href: '#features' },
+    { label: 'Product', href: '#alur-kerja' },
+    { label: 'Preview', href: '#sync' },
+    { label: 'Solution', href: '#use-cases' },
+    { label: 'Pricing', href: '#pricing' },
   ]
 
   const handleNavClick = (href) => {
@@ -40,130 +32,107 @@ export function Navbar() {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50">
-      {/* Announcement bar — hidden once the page is scrolled */}
-      <div
-        className={`overflow-hidden bg-[#F7F8FA] transition-all duration-100 ease-out ${
-          scrolled ? 'max-h-0 opacity-0' : 'max-h-10 opacity-100'
-        }`}
-        aria-hidden={scrolled}
-      >
-        <a
-          href="#features"
-          onClick={(e) => {
-            e.preventDefault()
-            handleNavClick('#features')
-          }}
-          tabIndex={scrolled ? -1 : 0}
-          className="flex h-10 items-center justify-center gap-2 px-4 text-[13px] text-[#344054] hover:text-[#101828] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#315CF5]"
+    <header className="fixed top-4 sm:top-5 left-0 right-0 z-50 px-3 sm:px-6 pointer-events-none flex justify-center">
+      <div className="pointer-events-auto w-full max-w-5xl">
+        {/* Floating Capsule Bar */}
+        <div
+          className={`w-full rounded-full bg-white/85 backdrop-blur-xl border border-slate-200/90 shadow-[0_8px_30px_rgb(0,0,0,0.06)] px-4 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between transition-all duration-300 ${
+            scrolled ? 'shadow-[0_12px_32px_rgba(0,0,0,0.1)] border-slate-300/80 bg-white/95' : ''
+          }`}
         >
-          <span className="truncate">
-            <span className="font-bold text-sm text-[#101828]">BARU: Portal Klien — </span>
-            <span className="hidden text-sm sm:inline"> Bagikan progres proyek langsung ke klien Anda</span>
-          </span>
-          <ChevronRight className="w-4 h-4 shrink-0 text-[#475467]" />
-        </a>
-      </div>
+          {/* Logo */}
+          <a
+            href="#"
+            className="flex items-center shrink-0 group focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-full"
+            aria-label="Flovig Home"
+          >
+            <FlovigLogo size="sm" />
+          </a>
 
-      {/* Main navbar */}
-      <div className={`transition-all duration-300 ${
-        scrolled
-          ? 'bg-white/80 backdrop-blur-xl'
-          : 'bg-white'
-      }`}>
-        <Container>
-          <div className="flex h-16 items-center justify-between">
-            {/* Logo + Desktop Nav Items */}
-            <div className="flex items-center gap-6 xl:gap-8">
+          {/* Desktop Navigation Links */}
+          <nav className="hidden md:flex items-center gap-1 sm:gap-2">
+            {navLinks.map((link) => (
               <a
-                href="#"
-                className="flex items-center group"
+                key={link.label}
+                href={link.href}
+                onClick={(e) => {
+                  e.preventDefault()
+                  handleNavClick(link.href)
+                }}
+                className="px-3 py-1.5 text-xs sm:text-[13px] font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 rounded-full transition-colors"
               >
-                <FlovigLogo size="md" />
+                {link.label}
               </a>
+            ))}
+          </nav>
 
-              <nav className="hidden lg:flex items-center gap-0.5">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      handleNavClick(link.href)
-                    }}
-                    className="px-3 py-2 text-sm font-medium text-[#475467] hover:text-[#101828] rounded-lg transition-colors"
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </nav>
-            </div>
-
-            {/* Desktop Right CTAs */}
-            <div className="hidden lg:flex items-center gap-2">
-              <button
-                onClick={() => handleNavClick('#pricing')}
-                className="h-10 px-4 rounded-xl bg-[#F2F4F7] text-sm font-semibold text-[#101828] hover:bg-[#E4E7EC] transition-colors cursor-pointer"
-              >
-                Masuk
-              </button>
-              <button
-                onClick={() => handleNavClick('#cta')}
-                className="h-10 px-4 rounded-xl bg-[#1D2939] text-sm font-semibold text-white hover:bg-[#101828] transition-colors cursor-pointer"
-              >
-                Mulai Sekarang
-              </button>
-            </div>
-
-            {/* Mobile Menu Button */}
+          {/* Desktop Right CTAs */}
+          <div className="hidden md:flex items-center gap-3">
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-[#344054] hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-[#315CF5]"
-              aria-label="Toggle menu"
+              type="button"
+              onClick={() => handleNavClick('#pricing')}
+              className="text-xs sm:text-[13px] font-medium text-slate-700 hover:text-slate-950 px-3 py-1.5 rounded-full transition-colors cursor-pointer"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              Login
+            </button>
+            <button
+              type="button"
+              onClick={() => handleNavClick('#pricing')}
+              className="px-4 py-2 rounded-full bg-[#0B1527] hover:bg-black text-white text-xs sm:text-[13px] font-semibold transition-all duration-200 shadow-sm cursor-pointer hover:shadow-md"
+            >
+              Get Started
             </button>
           </div>
 
-          {/* Mobile Dropdown Menu */}
-          {mobileMenuOpen && (
-            <div className="lg:hidden mb-3 p-4 bg-white rounded-2xl border border-[#E5E8F0] shadow-xl animate-in fade-in slide-in-from-top-4 duration-200">
-              <nav className="flex flex-col gap-1 pb-4 border-b border-[#E5E8F0]">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      handleNavClick(link.href)
-                    }}
-                    className="px-4 py-2.5 text-sm font-medium text-[#344054] hover:text-[#315CF5] hover:bg-[#F0F4FF] rounded-xl flex items-center justify-between"
-                  >
-                    <span>{link.label}</span>
-                    <ChevronRight className="w-4 h-4 text-[#98A2B3]" />
-                  </a>
-                ))}
-              </nav>
-              <div className="pt-4 flex flex-col gap-2.5">
-                <button
-                  onClick={() => handleNavClick('#pricing')}
-                  className="w-full py-2.5 text-center text-sm font-semibold text-[#344054] hover:bg-slate-50 rounded-xl"
+          {/* Mobile Menu Button */}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-1.5 rounded-full text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+
+        {/* Mobile Dropdown Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden mt-2 p-4 bg-white/95 backdrop-blur-xl rounded-3xl border border-slate-200/90 shadow-xl animate-in fade-in slide-in-from-top-2 duration-200">
+            <nav className="flex flex-col gap-1 pb-3 border-b border-slate-100">
+              {navLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    handleNavClick(link.href)
+                  }}
+                  className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-sky-600 hover:bg-slate-50 rounded-xl flex items-center justify-between"
                 >
-                  Masuk ke Workspace
-                </button>
-                <Button
-                  variant="primary"
-                  size="md"
-                  className="w-full"
-                  onClick={() => handleNavClick('#cta')}
-                  icon={ArrowRight}
-                >
-                  Mulai Sekarang Gratis
-                </Button>
-              </div>
+                  <span>{link.label}</span>
+                  <ChevronRight className="w-4 h-4 text-slate-400" />
+                </a>
+              ))}
+            </nav>
+            <div className="pt-3 flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => handleNavClick('#pricing')}
+                className="w-full py-2.5 text-center text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-full"
+              >
+                Login
+              </button>
+              <button
+                type="button"
+                onClick={() => handleNavClick('#pricing')}
+                className="w-full py-2.5 text-center text-sm font-semibold text-white bg-[#0B1527] hover:bg-black rounded-full flex items-center justify-center gap-1.5 shadow-sm"
+              >
+                <span>Get Started</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
-          )}
-        </Container>
+          </div>
+        )}
       </div>
     </header>
   )

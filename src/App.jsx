@@ -3,7 +3,7 @@ import { Footer } from './components/layout/Footer'
 import { HeroSection } from './sections/HeroSection'
 import { ProblemSolutionSection } from './sections/ProblemSolutionSection'
 import { WorkflowStorySection } from './sections/WorkflowStorySection'
-import { StackedFeaturesSection } from './sections/StackedFeaturesSection'
+// import { StackedFeaturesSection } from './sections/StackedFeaturesSection'
 import { ProductPlaygroundSection } from './sections/ProductPlaygroundSection'
 import { UseCasesSection } from './sections/UseCasesSection'
 import { PricingSection } from './sections/PricingSection'
@@ -18,7 +18,7 @@ function App() {
         <HeroSection />
         <ProblemSolutionSection />
         <WorkflowStorySection />
-        <StackedFeaturesSection />
+        {/* <StackedFeaturesSection /> */}
         <ProductPlaygroundSection />
         <UseCasesSection />
         <PricingSection />

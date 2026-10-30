@@ -301,33 +301,23 @@ export function ProblemSolutionSection() {
       <style>{CSS}</style>
       <div className="fx-inner">
         <header ref={headRef} className={`fx-head ${headIn ? 'is-in' : ''}`}>
-          {/* <span className="fx-badge"><i />SOLUSI UNTUK TIM SOLID</span> */}
           <h2>
-            Ketika pekerjaan tersebar,<br />
+            More Switching,<br />
             <span className="fx-hl">
-              visibilitas ikut hilang.
+              Less Teamwork.
               <svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true">
                 <defs>
                   <linearGradient id="fx-ulGrad" x1="0" x2="1">
-                    <stop offset="0" stopColor="#2563eb" /><stop offset="1" stopColor="#06b6d4" />
+                    <stop offset="0" stopColor="#0099FF" /><stop offset="1" stopColor="#00C2FF" />
                   </linearGradient>
                 </defs>
                 <path d="M3 8 C 80 2, 200 2, 297 7" />
               </svg>
             </span>
           </h2>
-          {/* <p>Flovig membantu tim menyatukan pekerjaan, komunikasi, dan progres dalam satu alur yang lebih jelas tanpa kehilangan konteks.</p> */}
+          <p>Tasks get missed. Updates get lost. Teams lose track of what's happening. Work gets complicated when everything isn't connected.</p>
 
           <div className="fx-toggle" role="tablist">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === 'without'}
-              className={tab === 'without' ? 'on on-without' : ''}
-              onClick={() => setTab('without')}
-            >
-              Tanpa Flovig (Pekerjaan Tersebar)
-            </button>
             <button
               type="button"
               role="tab"
@@ -335,7 +325,16 @@ export function ProblemSolutionSection() {
               className={tab === 'with' ? 'on on-with' : ''}
               onClick={() => setTab('with')}
             >
-              Dengan Flovig (Satu Alur Terpadu)
+              After Flovig
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === 'without'}
+              className={tab === 'without' ? 'on on-without' : ''}
+              onClick={() => setTab('without')}
+            >
+              Before Flovig
             </button>
           </div>
         </header>
@@ -431,11 +430,11 @@ const CSS = `
 .fx-head p{color:var(--fx-dim);font-size:16px;line-height:1.65;margin:0}
 
 /* toggle */
-.fx-toggle{display:inline-flex;gap:8px;padding:0;margin-top:28px;border:none;border-radius:9999px;background:transparent;flex-wrap:wrap;justify-content:center;box-shadow:none}
-.fx-toggle button{font:inherit;font-size:13.5px;font-weight:700;color:var(--fx-dim);background:var(--fx-bg);border:0;padding:10px 24px;border-radius:9999px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s var(--fx-ease);box-shadow:0 1px 3px rgba(15,23,42,.06)}
-.fx-toggle button:not(.on):hover{color:var(--fx-text);background:rgba(241,245,249,.9);transform:translateY(-1px)}
-.fx-toggle button.on.on-with{background:linear-gradient(90deg,#315CF5 0%,#06b6d4 50%,#7EF0D0 100%);color:#fff;box-shadow:0 6px 20px rgba(49,92,245,.35);text-shadow:0 1px 2px rgba(15,23,42,.15)}
-.fx-toggle button.on.on-without{background:linear-gradient(90deg,#ef4444 0%,#f97316 50%,#f59e0b 100%);color:#fff;box-shadow:0 6px 20px rgba(239,68,68,.38);text-shadow:0 1px 2px rgba(15,23,42,.15)}
+.fx-toggle{display:inline-flex;gap:10px;padding:0;margin-top:28px;border:none;border-radius:9999px;background:transparent;flex-wrap:wrap;justify-content:center;box-shadow:none}
+.fx-toggle button{font:inherit;font-size:13.5px;font-weight:600;color:#475569;background:#ffffff;border:1px solid #cbd5e1;padding:8px 24px;border-radius:9999px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s var(--fx-ease);box-shadow:0 1px 3px rgba(15,23,42,.04)}
+.fx-toggle button:not(.on):hover{color:#0f172a;border-color:#94a3b8;background:#f8fafc;transform:translateY(-1px)}
+.fx-toggle button.on.on-with{background:linear-gradient(90deg,#0099FF 0%,#00C2FF 100%);color:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(0,153,255,.35)}
+.fx-toggle button.on.on-without{background:linear-gradient(90deg,#ef4444 0%,#f97316 50%,#f59e0b 100%);color:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(239,68,68,.35)}
 
 .fx-panel{animation:fx-panelIn .5s var(--fx-ease)}
 @keyframes fx-panelIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}

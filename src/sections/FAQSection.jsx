@@ -1,125 +1,106 @@
 import { useState } from 'react'
-import { Container } from '../components/layout/Container'
-import { faqList } from '../data/mockData'
-import { ChevronDown } from 'lucide-react'
+import { Plus, X } from 'lucide-react'
 
-const FAQ_CSS = `
-.faq-main-heading {
-  font-size: clamp(26px, 3.2vw, 42px);
-  line-height: 1.15;
-  font-weight: 800;
-  letter-spacing: -0.035em;
-  color: #0F172A;
-  margin: 0;
-}
-.faq-hl {
-  position: relative;
-  display: inline-block;
-  padding-bottom: 4px;
-  color: transparent;
-  background: linear-gradient(90deg, #2563eb, #06b6d4);
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-.faq-hl svg {
-  position: absolute;
-  left: 0;
-  bottom: -4px;
-  width: 100%;
-  height: 12px;
-  overflow: visible;
-  display: block;
-}
-.faq-hl path {
-  fill: none;
-  stroke: url(#faq-ulGrad);
-  stroke-width: 3.2;
-  stroke-linecap: round;
-}
-`
+const FAQS_DATA = [
+  {
+    question: 'How does Flovig help prevent team overload (Workload Management)?',
+    answer:
+      'Flovig tracks active tasks, story points, and sprint deadlines assigned to each member in real-time. The Workload overview visually highlights anyone approaching or exceeding capacity so managers can rebalance work with a single drag-and-drop before deadlines slip.',
+  },
+  {
+    question: 'Are there any limits on projects, tasks, or clients in Flovig?',
+    answer:
+      'No. All Flovig plans—including the Free Plan—include unlimited projects, tasks, boards, and client records. Plans scale purely based on the number of active team seats and storage capacity.',
+  },
+  {
+    question: 'Are HRIS or AI features included in the current Flovig V1?',
+    answer:
+      'No. Flovig V1 focuses strictly on core work management: projects, tasks, sprints, workload planning, timesheets, and a dedicated Client Portal. HRIS (payroll, attendance) and AI capabilities are part of our future roadmap and clearly separated from V1 core capabilities.',
+  },
+  {
+    question: 'What makes Flovig different from regular task management tools?',
+    answer:
+      'Flovig is designed as a unified work operating system combining project management, task boards, workload tracking, and a dedicated Client Portal in one workflow. You no longer need 4 separate tools to manage internal teams and client communication.',
+  },
+  {
+    question: 'How does the Client Portal work? Can clients see internal notes?',
+    answer:
+      'The Client Portal provides a secure, white-labeled view of agreed deliverables, status milestones, and billing history. Internal notes, raw task threads, and team capacity data remain strictly private to your team.',
+  },
+  {
+    question: 'Does Flovig support Google Meet and calendar integration?',
+    answer:
+      'Yes. Flovig features a 1-click Google Meet integration that automatically generates meeting links within task threads, plus two-way calendar sync so sprint dates and deadlines appear in your preferred calendar.',
+  },
+]
 
 export function FAQSection() {
-  const [openIndex, setOpenIndex] = useState(0)
+  const [openIndex, setOpenIndex] = useState(3) // Item 4 open by default matching UI Image 2
 
-  const toggleAccordion = (idx) => {
+  const toggleItem = (idx) => {
     setOpenIndex(openIndex === idx ? -1 : idx)
   }
 
   return (
-    <section id="faq" className="py-24 bg-white">
-      <style>{FAQ_CSS}</style>
-      <Container>
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="faq-main-heading">
-            Pertanyaan yang sering diajukan{' '}<br className="hidden sm:inline" />
-            <span className="faq-hl">
-              tentang Flovig.
-              <svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true">
-                <defs>
-                  <linearGradient id="faq-ulGrad" x1="0" x2="1">
-                    <stop offset="0" stopColor="#2563eb" />
-                    <stop offset="1" stopColor="#06b6d4" />
-                  </linearGradient>
-                </defs>
-                <path d="M3 8 C 80 2, 200 2, 297 7" />
-              </svg>
-            </span>
-          </h2>
-          <p className="mt-4 text-base sm:text-lg text-[#64748B]">
-            Jawaban langsung tanpa basa-basi mengenai kapabilitas, batasan akses klien, serta fokus produk Flovig.
-          </p>
+    <section id="faq" className="py-20 sm:py-28 md:py-32 bg-white text-center overflow-hidden">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Top FAQs Badge */}
+        <div className="inline-flex items-center mb-6">
+          <span className="px-3.5 py-1 rounded-full border border-slate-200 text-xs font-semibold text-slate-600 bg-white shadow-2xs">
+            FAQs
+          </span>
         </div>
 
-        {/* Minimalist Line-Divided Accordion List (matches reference image) */}
-        <div className="max-w-3xl mx-auto divide-y divide-[#E5E8F0] border-b border-[#E5E8F0]">
-          {faqList.map((faq, idx) => {
+        {/* Section Heading (Matches UI Image 2) */}
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-950 tracking-tight leading-tight">
+          Got Questions?<br />
+          We Already Answer.
+        </h2>
+
+        {/* Accordion List */}
+        <div className="mt-10 sm:mt-14 space-y-3 sm:space-y-3.5 text-left">
+          {FAQS_DATA.map((faq, idx) => {
             const isOpen = openIndex === idx
+
             return (
-              <div key={idx} className="py-5 sm:py-6">
+              <div
+                key={idx}
+                className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                  isOpen
+                    ? 'border-slate-300/90 bg-slate-50/70 shadow-sm'
+                    : 'border-slate-200/80 bg-white hover:border-slate-300 shadow-2xs'
+                }`}
+              >
                 <button
                   type="button"
-                  onClick={() => toggleAccordion(idx)}
-                  className="w-full text-left flex items-center justify-between gap-6 font-bold text-base sm:text-lg text-[#101828] hover:text-[#2563eb] transition-colors cursor-pointer group"
+                  onClick={() => toggleItem(idx)}
+                  className="w-full p-5 sm:p-6 flex items-center justify-between gap-4 text-left cursor-pointer focus:outline-none"
                   aria-expanded={isOpen}
                 >
-                  <span className="leading-snug">{faq.question}</span>
-                  <ChevronDown
-                    className={`w-5 h-5 text-[#475467] group-hover:text-[#101828] shrink-0 transition-transform duration-200 ${
-                      isOpen ? 'rotate-180 text-[#101828]' : ''
-                    }`}
-                    strokeWidth={2}
-                  />
+                  <span className="text-sm sm:text-base font-semibold text-slate-900 leading-snug">
+                    {faq.question}
+                  </span>
+                  <span className="shrink-0 text-slate-500 hover:text-slate-800 transition-colors">
+                    {isOpen ? (
+                      <X className="w-5 h-5 stroke-[2]" />
+                    ) : (
+                      <Plus className="w-5 h-5 stroke-[2]" />
+                    )}
+                  </span>
                 </button>
 
                 {isOpen && (
-                  <div className="pt-3 pb-1 text-sm sm:text-base text-[#475467] leading-relaxed animate-in fade-in duration-200">
-                    <p>{faq.answer}</p>
+                  <div className="px-5 sm:px-6 pb-5 sm:pb-6 text-xs sm:text-sm text-slate-600 leading-relaxed pt-0 border-t border-slate-200/50">
+                    <p className="mt-3">{faq.answer}</p>
                   </div>
                 )}
               </div>
             )
           })}
         </div>
-
-        {/* Still have questions banner */}
-        {/* <div className="mt-14 max-w-xl mx-auto p-5 rounded-2xl bg-[#F8FAFC] border border-[#E5E8F0] text-center flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#315CF5]/10 text-[#315CF5] flex items-center justify-center shrink-0">
-              <MessageSquare className="w-5 h-5" />
-            </div>
-            <div className="text-left">
-              <h5 className="font-bold text-xs sm:text-sm text-[#101828]">Punya pertanyaan teknis lain?</h5>
-              <p className="text-[11px] text-[#64748B]">Tim kami siap membantu kebutuhan workflow Anda.</p>
-            </div>
-          </div>
-          <a
-            href="#cta"
-            className="px-4 py-2 rounded-xl bg-[#111A2E] hover:bg-[#1f2d4d] text-white text-xs font-semibold whitespace-nowrap transition-colors"
-          >
-            Hubungi Tim Kami
-          </a>
-        </div> */}
-      </Container>
+      </div>
     </section>
   )
 }
+
+export default FAQSection
