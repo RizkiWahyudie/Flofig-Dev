@@ -66,7 +66,7 @@ const PLANS_DATA = [
     price: { monthly: 29900, yearly: 250800 }, // yearly = 12 × 299 × 50%
     desc: 'For growing teams that need more space',
     items: [
-      '9–19 users',
+      '9–49 users',
       '3 workspaces',
       'Unlimited projects, tasks, boards & lists',
       '25 GB storage · max 100 MB per file',
@@ -94,7 +94,7 @@ const PLANS_DATA = [
     name: 'Pro Plan',
     minUsers: 100,
     maxUsers: 199,
-    price: { monthly: 21900, yearly: 183600 },
+    price: { monthly: 20900, yearly: 183600 },
     desc: 'For large organizations needing unlimited workspaces',
     items: [
       '100–199 users',

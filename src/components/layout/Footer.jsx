@@ -154,7 +154,13 @@ export function Footer() {
             <ul className="space-y-3.5 text-xs sm:text-[13px]">
               <li className="flex items-center gap-2.5 text-slate-600">
                 <WhatsAppIcon className="w-4 h-4 text-slate-800 shrink-0" />
-                <span>(406) 555-0120</span>
+                <a
+                  href="https://wa.me/6281211955805?text=Halo%20Flovig,%20ada%20yang%20ingin%20saya%20tanyakan.."
+                  target="_blank" rel="noopener"
+                  className="hover:text-slate-900 transition-colors"
+                >
+                  +62 8121 1955 805
+                </a>
               </li>
               <li className="flex items-center gap-2.5 text-slate-600">
                 <Mail className="w-4 h-4 text-slate-800 shrink-0" />

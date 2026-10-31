@@ -43,66 +43,68 @@ export function WorkflowStorySection() {
   const currentItem = SYNC_ITEMS[activeIdx]
 
   return (
-    <section id="sync" className="relative py-16 sm:py-20 md:py-24 bg-white overflow-hidden">
-      {/* 2-Column Content: Left heading + cards, Right screenshot bleeds to right edge */}
+    <section id="sync" className="relative py-20 sm:py-24 md:py-28 bg-white overflow-hidden">
+      {/* Section Heading: Di luar grid agar judul luas dan tidak mengerucut */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 sm:mb-4">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight leading-[1.1] text-slate-950 text-left">
+          We Bring <span className="text-[#00A3FF]">Everything</span><br />
+          Back To <span className="text-[#00A3FF]">Sync.</span>
+        </h2>
+      </div>
+
+      {/* 2-Column Content: Left sub-heading + cards, Right screenshot bleeds to right edge, aligned items center */}
       <div className="w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Left Column: Heading + Cards */}
-            <div className="lg:col-span-5 flex flex-col shrink-0 z-10">
-              {/* Heading */}
-              <div className="mb-8 sm:mb-10 text-left">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1] text-slate-950">
-                  We Bring <span className="text-[#00A3FF]">Everything</span><br />
-                  Back To <span className="text-[#00A3FF]">Sync.</span>
-                </h2>
-                <p className="mt-4 sm:mt-5 text-sm sm:text-base md:text-lg text-slate-500 leading-relaxed">
-                  Flovig connects your team's work in one place, making it easier to stay organized, keep everyone aligned, and move projects forward. That's how we work.
-                </p>
-              </div>
+            {/* Left Column: Sub-heading + Cards */}
+            <div className="lg:col-span-5 flex flex-col shrink-0 z-10 text-left">
+              {/* Sub-heading deskripsi masuk ke kolom kiri */}
+              <p className="mb-6 sm:mb-8 text-sm sm:text-base md:text-lg text-slate-500 leading-relaxed">
+                Flovig connects your team's work in one place, making it easier to stay organized, keep everyone aligned, and move projects forward. That's how we work.
+              </p>
 
               {/* Cards List */}
               <div className="flex flex-col gap-4 sm:gap-5">
                 {SYNC_ITEMS.map((item, idx) => {
-                  const Icon = item.icon
-                  const isActive = activeIdx === idx
+                const Icon = item.icon
+                const isActive = activeIdx === idx
 
-                  return (
-                    <div
-                      key={item.id}
-                      onMouseEnter={() => setActiveIdx(idx)}
-                      onClick={() => setActiveIdx(idx)}
-                      className={`relative p-5 sm:p-6 rounded-2xl transition-all duration-200 cursor-pointer text-left select-none ${
-                        isActive
-                          ? 'border-2 border-[#00A3FF] bg-white shadow-[0_8px_30px_rgba(0,163,255,0.08)] ring-4 ring-[#00A3FF]/10'
-                          : 'border border-slate-200/80 bg-white hover:border-slate-300 hover:bg-slate-50/50'
-                      }`}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          setActiveIdx(idx)
-                        }
-                      }}
-                      aria-pressed={isActive}
-                    >
-                      {/* Icon badge */}
-                      <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-[#00A3FF] mb-3.5">
-                        <Icon className="w-5 h-5 stroke-[2]" />
-                      </div>
-
-                      {/* Title */}
-                      <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
-                        {item.title}
-                      </h3>
-
-                      {/* Description */}
-                      <p className="mt-1.5 text-xs sm:text-sm text-slate-500 leading-relaxed">
-                        {item.desc}
-                      </p>
+                return (
+                  <div
+                    key={item.id}
+                    onMouseEnter={() => setActiveIdx(idx)}
+                    onClick={() => setActiveIdx(idx)}
+                    className={`relative p-5 sm:p-6 rounded-2xl transition-all duration-200 cursor-pointer text-left select-none ${
+                      isActive
+                        ? 'border-2 border-[#00A3FF] bg-white shadow-[0_8px_30px_rgba(0,163,255,0.08)] ring-4 ring-[#00A3FF]/10'
+                        : 'border border-slate-200/80 bg-white hover:border-slate-300 hover:bg-slate-50/50'
+                    }`}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        setActiveIdx(idx)
+                      }
+                    }}
+                    aria-pressed={isActive}
+                  >
+                    {/* Icon badge */}
+                    <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-[#00A3FF] mb-3.5">
+                      <Icon className="w-5 h-5 stroke-[2]" />
                     </div>
-                  )
-                })}
+
+                    {/* Title */}
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+                      {item.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="mt-1.5 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </div>
+                )
+              })}
               </div>
             </div>
 
