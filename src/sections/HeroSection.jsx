@@ -91,6 +91,16 @@ export function HeroSection() {
 
   return (
     <section ref={heroRef} className="relative pt-28 sm:pt-36 md:pt-40 pb-16 sm:pb-24 overflow-hidden bg-white text-center">
+      {/* Background Gradient SVG Asset */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden flex justify-center z-0">
+        <img
+          src="/asset/bg-gradient-hero.svg"
+          alt=""
+          className="w-full min-w-[1200px] h-auto object-cover object-top select-none pointer-events-none"
+          aria-hidden="true"
+        />
+      </div>
+
       {/* Top Container: Centered Heading, Subheading, CTAs & Logos */}
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6">
         {/* Animated Gradient Badge (Restored with moving color beam) */}
@@ -137,7 +147,7 @@ export function HeroSection() {
       </div>
 
       {/* Video Container: Contained like other sections, preserving original 16:9 frame & resolution */}
-      <div id="features" className="hero-media-wrap mt-12 sm:mt-16 max-w-6xl mx-auto px-4 sm:px-6 scroll-mt-24 sm:scroll-mt-28">
+      <div id="features" className="hero-media-wrap relative z-10 mt-12 sm:mt-16 max-w-6xl mx-auto px-4 sm:px-6 scroll-mt-24 sm:scroll-mt-28">
         <div className="relative rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 bg-white border border-slate-200/90 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
           <div
             className="relative rounded-xl sm:rounded-2xl overflow-hidden bg-slate-950 aspect-video group cursor-pointer"

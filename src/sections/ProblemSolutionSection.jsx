@@ -246,6 +246,7 @@ export function ProblemSolutionSection() {
   const isDraggingRef = useRef(false)
   const hasDraggedRef = useRef(false)
   const startXRef = useRef(0)
+  const clickTargetRef = useRef(null)
   const splitContainerRef = useRef(null)
   const headRef = useRef(null)
   const gridRef = useRef(null)
@@ -258,6 +259,7 @@ export function ProblemSolutionSection() {
     hasDraggedRef.current = false
     setIsDragging(true)
     startXRef.current = e.clientX
+    clickTargetRef.current = e.target
     if (e.currentTarget.setPointerCapture) {
       try {
         e.currentTarget.setPointerCapture(e.pointerId)
@@ -286,27 +288,58 @@ export function ProblemSolutionSection() {
     if (e.currentTarget && e.currentTarget.releasePointerCapture) {
       try {
         e.currentTarget.releasePointerCapture(e.pointerId)
-      } catch (err) {
+      } catch (e) {
         // ignore
+        console.error(e)
       }
     }
 
-    const deltaX = e.clientX - startXRef.current
+    const wasDragging = hasDraggedRef.current
 
-    // Geser hingga dekat tepi atau flick cepat ke arah tepi -> snap ke full
-    if (sliderPos >= 82 || (deltaX > 60 && sliderPos > 65)) {
-      setSliderPos(100)
-    } else if (sliderPos <= 18 || (deltaX < -60 && sliderPos < 35)) {
-      setSliderPos(0)
+    if (wasDragging) {
+      // Gesture geser / drag: snap jika dilepas di dekat tepi
+      const deltaX = e.clientX - startXRef.current
+      if (sliderPos >= 82 || (deltaX > 60 && sliderPos > 65)) {
+        setSliderPos(100)
+      } else if (sliderPos <= 18 || (deltaX < -60 && sliderPos < 35)) {
+        setSliderPos(0)
+      }
+    } else {
+      // Gesture klik murni (bukan drag):
+      if (clickTargetRef.current?.closest?.('.fx-split-btn-left')) {
+        // Klik tombol panah kiri di tengah -> meluncur ke Before Flovig
+        setSliderPos(0)
+      } else if (clickTargetRef.current?.closest?.('.fx-split-btn-right')) {
+        // Klik tombol panah kanan di tengah -> meluncur ke After Flovig
+        setSliderPos(100)
+      } else {
+        const isHandleClick = Boolean(
+          clickTargetRef.current?.closest?.('.fx-split-handle') ||
+          clickTargetRef.current?.closest?.('.fx-split-divider') ||
+          e.target?.closest?.('.fx-split-handle') ||
+          e.target?.closest?.('.fx-split-divider')
+        )
+
+        if (isHandleClick) {
+          if (sliderPos >= 80) {
+            // Sedang di kanan (After Flovig full) -> klik panah < untuk meluncur ke kiri (Before Flovig)
+            setSliderPos(0)
+          } else if (sliderPos <= 20) {
+            // Sedang di kiri (Before Flovig full) -> klik panah > untuk meluncur ke kanan (After Flovig)
+            setSliderPos(100)
+          }
+        }
+      }
     }
 
-    // Reset hasDragged setelah click event browser selesai diproses
+    // Reset hasDragged setelah siklus event selesai
     setTimeout(() => {
       hasDraggedRef.current = false
     }, 150)
   }
 
   const handleHandleClick = (e) => {
+    e.stopPropagation()
     // Jika aksi sebelumnya adalah drag/geser, jangan toggle arah click!
     if (hasDraggedRef.current) {
       return
@@ -387,9 +420,9 @@ export function ProblemSolutionSection() {
   }, [])
 
   // Posisi garis dan batas klip agar handle bulat (diameter 44px) tidak terpotong di tepi kontainer
-  const linePosition = sliderPos >= 85 ? 'calc(100% - 26px)' : sliderPos <= 15 ? '26px' : `${sliderPos}%`
-  const clipAfter = sliderPos >= 85 ? '26px' : sliderPos <= 15 ? 'calc(100% - 26px)' : `${100 - sliderPos}%`
-  const clipBefore = sliderPos >= 85 ? 'calc(100% - 26px)' : sliderPos <= 15 ? '26px' : `${sliderPos}%`
+  const linePosition = sliderPos >= 85 ? 'calc(100% - 26px)' : sliderPos <= 15 ? 'calc(0% + 26px)' : `${sliderPos}%`
+  const clipAfter = sliderPos >= 85 ? 'calc(0% + 26px)' : sliderPos <= 15 ? 'calc(100% - 26px)' : `${100 - sliderPos}%`
+  const clipBefore = sliderPos >= 85 ? 'calc(100% - 26px)' : sliderPos <= 15 ? 'calc(0% + 26px)' : `${sliderPos}%`
 
   return (
     <section className="fx" id="alur-kerja">
@@ -524,14 +557,38 @@ export function ProblemSolutionSection() {
                     <polyline points="9 18 15 12 9 6" />
                   </svg>
                 ) : (
-                  /* Di tengah: dua panah kiri-kanan < > (indikator visual) */
-                  <div className="fx-split-handle-duo" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="15 18 9 12 15 6" />
-                    </svg>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
+                  /* Di tengah: dua panah kiri-kanan < > yang bisa diklik */
+                  <div className="fx-split-handle-duo">
+                    <button
+                      type="button"
+                      className="fx-split-btn fx-split-btn-left"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (hasDraggedRef.current) return
+                        setSliderPos(0)
+                      }}
+                      title="Tampilkan Before Flovig"
+                      aria-label="Before Flovig"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="15 18 9 12 15 6" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      className="fx-split-btn fx-split-btn-right"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (hasDraggedRef.current) return
+                        setSliderPos(100)
+                      }}
+                      title="Tampilkan After Flovig"
+                      aria-label="After Flovig"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </button>
                   </div>
                 )}
               </div>
@@ -630,8 +687,10 @@ const CSS = `
 .fx-split-handle:hover{transform:translate(-50%,-50%) scale(1.08);box-shadow:0 6px 24px rgba(0,136,255,.7),0 0 0 4px #ffffff}
 .fx-split-handle.is-edge{cursor:pointer}
 .fx-split-handle svg{width:18px;height:18px;stroke-width:2.8;color:#ffffff;flex-shrink:0;pointer-events:none}
-.fx-split-handle-duo{display:flex;align-items:center;justify-content:center;gap:2px;pointer-events:none}
-.fx-split-handle-duo svg{width:13px;height:13px;stroke-width:2.8;color:#ffffff}
+.fx-split-handle-duo{display:flex;align-items:center;justify-content:center;gap:1px;width:100%;height:100%;border-radius:50%;overflow:hidden}
+.fx-split-btn{background:transparent;border:none;color:#ffffff;height:100%;flex:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:background .15s}
+.fx-split-btn:hover{background:rgba(255,255,255,.22)}
+.fx-split-btn svg{width:13px;height:13px;stroke-width:2.8;color:#ffffff;pointer-events:none}
 
 .fx-panel{animation:fx-panelIn .5s var(--fx-ease)}
 @keyframes fx-panelIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
