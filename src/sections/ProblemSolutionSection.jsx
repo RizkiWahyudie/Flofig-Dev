@@ -306,6 +306,21 @@ export function ProblemSolutionSection() {
     }
   }
 
+  // Otomatis kembali ke tengah (50%) setelah 7 detik jika garis berada di posisi full (After atau Before)
+  useEffect(() => {
+    if (isDragging) return
+
+    // Cek jika sedang berada di posisi full (ujung kanan atau ujung kiri)
+    const isFull = sliderPos >= 80 || sliderPos <= 20
+    if (!isFull) return
+
+    const timer = setTimeout(() => {
+      setSliderPos(50)
+    }, 7000)
+
+    return () => clearTimeout(timer)
+  }, [sliderPos, isDragging])
+
   useEffect(() => {
     if (typeof IntersectionObserver === 'undefined') return
 

@@ -364,7 +364,7 @@ export function PricingSection() {
                         : 'bg-white hover:bg-blue-50 text-[#0A7CFF] border border-[#0A7CFF]'
                     }`}
                   >
-                    Starts 14 days free trial
+                    Starts 7 days free trial
                     <ChevronRight className="w-3.5 h-3.5" strokeWidth={2.5} />
                   </a>
                 </div>
