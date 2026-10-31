@@ -13,11 +13,6 @@ const FAQS_DATA = [
       'No. All Flovig plans—including the Free Plan—include unlimited projects, tasks, boards, and client records. Plans scale purely based on the number of active team seats and storage capacity.',
   },
   {
-    question: 'Are HRIS or AI features included in the current Flovig V1?',
-    answer:
-      'No. Flovig V1 focuses strictly on core work management: projects, tasks, sprints, workload planning, timesheets, and a dedicated Client Portal. HRIS (payroll, attendance) and AI capabilities are part of our future roadmap and clearly separated from V1 core capabilities.',
-  },
-  {
     question: 'What makes Flovig different from regular task management tools?',
     answer:
       'Flovig is designed as a unified work operating system combining project management, task boards, workload tracking, and a dedicated Client Portal in one workflow. You no longer need 4 separate tools to manage internal teams and client communication.',

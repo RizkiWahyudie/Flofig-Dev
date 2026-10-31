@@ -81,7 +81,7 @@ export function ProductPlaygroundSection() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-[13px] font-semibold transition-all duration-200 cursor-pointer ${
                     isActive
-                      ? 'bg-[#0099FF] text-white shadow-md shadow-sky-500/25 ring-2 ring-sky-400/20'
+                      ? 'bg-gradient-to-r from-[#0099FF] to-[#00C2FF] text-white shadow-md shadow-sky-500/25'
                       : 'bg-white text-slate-700 border border-slate-300 hover:border-slate-400 hover:bg-slate-50'
                   }`}
                 >

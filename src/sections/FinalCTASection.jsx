@@ -12,7 +12,7 @@ export function FinalCTASection() {
         {/* Banner with bg-footer.svg Background Asset (Matches UI Image 3) */}
         <div className="relative rounded-3xl overflow-hidden p-8 sm:p-12 md:p-14 absolute inset-0 z-0 bg-gradient-to-b from-[#0066FF] via-[#0099FF] to-[#00D4FF] shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Background Texture from bg-footer.svg */}
-          <img src="/bg-footer.svg" alt="" className="absolute inset-0 z-[1] w-full h-full object-cover pointer-events-none opacity-70" />
+          <img src="/asset/bg-footer.svg" alt="" className="absolute inset-0 z-[1] w-full h-full object-cover pointer-events-none opacity-70" />
 
           {/* Left Headline */}
           <div className="relative z-10 text-center md:text-left">
@@ -23,14 +23,13 @@ export function FinalCTASection() {
 
           {/* Right Action Buttons */}
           <div className="relative z-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4 shrink-0">
-            <button
-              type="button"
-              onClick={() => scrollTo('#pricing')}
+            <a
+              href={`${typeof window !== 'undefined' ? window.location.origin : ''}/daftar`}
               className="px-6 sm:px-7 py-3 rounded-full bg-white hover:bg-slate-50 text-slate-900 text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group"
             >
               <span>Get Started</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-            </button>
+            </a>
 
             <button
               type="button"

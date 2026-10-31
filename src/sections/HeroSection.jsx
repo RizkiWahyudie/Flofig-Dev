@@ -113,14 +113,13 @@ export function HeroSection() {
 
         {/* CTA Buttons */}
         <div className="hero-cta-el mt-7 sm:mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-          <button
-            type="button"
-            onClick={() => scrollTo('#pricing')}
+          <a
+            href={`${typeof window !== 'undefined' ? window.location.origin : ''}/daftar`}
             className="px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-[#0B1527] hover:bg-black text-white text-xs sm:text-sm font-semibold inline-flex items-center gap-2 shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group"
           >
             <span>Get Started - It's Free!</span>
             <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-          </button>
+          </a>
 
           <button
             type="button"
@@ -138,7 +137,7 @@ export function HeroSection() {
       </div>
 
       {/* Video Container: Contained like other sections, preserving original 16:9 frame & resolution */}
-      <div className="hero-media-wrap mt-12 sm:mt-16 max-w-6xl mx-auto px-4 sm:px-6">
+      <div id="features" className="hero-media-wrap mt-12 sm:mt-16 max-w-6xl mx-auto px-4 sm:px-6 scroll-mt-24 sm:scroll-mt-28">
         <div className="relative rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 bg-white border border-slate-200/90 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
           <div
             className="relative rounded-xl sm:rounded-2xl overflow-hidden bg-slate-950 aspect-video group cursor-pointer"

@@ -68,20 +68,18 @@ export function Navbar() {
 
           {/* Desktop Right CTAs */}
           <div className="hidden md:flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => handleNavClick('#pricing')}
+            <a
+              href={`${typeof window !== 'undefined' ? window.location.origin : ''}/login`}
               className="text-xs sm:text-[13px] font-medium text-slate-700 hover:text-slate-950 px-3 py-1.5 rounded-full transition-colors cursor-pointer"
             >
               Login
-            </button>
-            <button
-              type="button"
-              onClick={() => handleNavClick('#pricing')}
+            </a>
+            <a
+              href={`${typeof window !== 'undefined' ? window.location.origin : ''}/daftar`}
               className="px-4 py-2 rounded-full bg-[#0B1527] hover:bg-black text-white text-xs sm:text-[13px] font-semibold transition-all duration-200 shadow-sm cursor-pointer hover:shadow-md"
             >
               Get Started
-            </button>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -115,21 +113,19 @@ export function Navbar() {
               ))}
             </nav>
             <div className="pt-3 flex flex-col gap-2">
-              <button
-                type="button"
-                onClick={() => handleNavClick('#pricing')}
-                className="w-full py-2.5 text-center text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-full"
+              <a
+                href={`${typeof window !== 'undefined' ? window.location.origin : ''}/login`}
+                className="w-full py-2.5 text-center text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-full block"
               >
                 Login
-              </button>
-              <button
-                type="button"
-                onClick={() => handleNavClick('#pricing')}
+              </a>
+              <a
+                href={`${typeof window !== 'undefined' ? window.location.origin : ''}/daftar`}
                 className="w-full py-2.5 text-center text-sm font-semibold text-white bg-[#0B1527] hover:bg-black rounded-full flex items-center justify-center gap-1.5 shadow-sm"
               >
                 <span>Get Started</span>
                 <ArrowRight className="w-4 h-4" />
-              </button>
+              </a>
             </div>
           </div>
         )}

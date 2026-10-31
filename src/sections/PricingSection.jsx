@@ -62,8 +62,8 @@ const PLANS_DATA = [
     id: 'starter',
     name: 'Starter Plan',
     minUsers: 9,
-    maxUsers: 19,
-    price: { monthly: 299, yearly: 1794 }, // yearly = 12 × 299 × 50%
+    maxUsers: 49,
+    price: { monthly: 29900, yearly: 250800 }, // yearly = 12 × 299 × 50%
     desc: 'For growing teams that need more space',
     items: [
       '9–19 users',
@@ -75,26 +75,11 @@ const PLANS_DATA = [
     ],
   },
   {
-    id: 'team',
-    name: 'Team Plan',
-    minUsers: 20,
-    maxUsers: 49,
-    price: { monthly: 279, yearly: 1674 },
-    desc: 'For multiple teams within an organization',
-    items: [
-      '20–49 users',
-      '5 workspaces',
-      'Unlimited projects, tasks, boards & lists',
-      '75 GB storage · max 250 MB per file',
-      'Priority Support',
-    ],
-  },
-  {
     id: 'business',
     name: 'Business Plan',
     minUsers: 50,
     maxUsers: 99,
-    price: { monthly: 249, yearly: 1494 },
+    price: { monthly: 24900, yearly: 208800 },
     desc: 'For companies with multiple divisions and parallel projects',
     items: [
       '50–99 users',
@@ -109,7 +94,7 @@ const PLANS_DATA = [
     name: 'Pro Plan',
     minUsers: 100,
     maxUsers: 199,
-    price: { monthly: 219, yearly: 1314 },
+    price: { monthly: 21900, yearly: 183600 },
     desc: 'For large organizations needing unlimited workspaces',
     items: [
       '100–199 users',
@@ -174,10 +159,68 @@ const COMPARISON_ROWS = [
 ]
 
 const MAX_USERS = 999
-const TABLE_COLS = 'grid grid-cols-[1.4fr_repeat(6,minmax(0,1fr))] gap-x-3'
+const TABLE_COLS = 'grid grid-cols-[1.4fr_repeat(5,minmax(0,1fr))] gap-x-3'
 
-const formatPrice = (value) => (value === null ? 'Custom' : `IDR ${value.toLocaleString('id-ID')}`)
 const periodLabel = (cycle) => (cycle === 'yearly' ? 'per year' : 'per month')
+
+function formatPriceParts(value) {
+  if (value === null) return { type: 'custom', text: 'Custom' }
+  if (typeof value !== 'number') return { type: 'custom', text: String(value) }
+
+  // Khusus nilai 0 (Free Plan di PLANS_DATA[0]):
+  // Menampilkan 0 dengan 3 angka di belakang (.000) berukuran kecil
+  if (value === 0) {
+    return {
+      type: 'split',
+      prefix: 'IDR ',
+      main: '0',
+      tail: '',
+    }
+  }
+
+  const formatted = value.toLocaleString('id-ID')
+  const lastDotIdx = formatted.lastIndexOf('.')
+
+  // Jika memiliki format ribuan dengan 3 angka di belakang titik (misal: "29.900", "250.800")
+  if (lastDotIdx !== -1 && formatted.length - lastDotIdx === 4) {
+    return {
+      type: 'split',
+      prefix: 'IDR ',
+      main: formatted.slice(0, lastDotIdx),
+      tail: formatted.slice(lastDotIdx), // misal ".900", ".800"
+    }
+  }
+
+  return {
+    type: 'single',
+    text: `IDR ${formatted}`,
+  }
+}
+
+export function PriceDisplay({ value, size = 'card' }) {
+  const parts = formatPriceParts(value)
+
+  if (parts.type === 'custom') {
+    return <span>{parts.text}</span>
+  }
+
+  if (parts.type === 'single') {
+    return <span>{parts.text}</span>
+  }
+
+  return (
+    <span className="inline-flex items-baseline">
+      <span>{parts.prefix}{parts.main}</span>
+      <span className={size === 'card' ? 'text-[22px] font-semibold tracking-normal' : 'text-xs font-medium tracking-normal'}>
+        {parts.tail}
+      </span>
+    </span>
+  )
+}
+
+// Helper formatPrice untuk kompatibilitas jika dipanggil sebagai fungsi
+// eslint-disable-next-line react-refresh/only-export-components
+export const formatPrice = (value, size = 'card') => <PriceDisplay value={value} size={size} />
 
 export function PricingSection() {
   const [billingCycle, setBillingCycle] = useState('monthly') // 'monthly' | 'yearly'
@@ -211,7 +254,7 @@ export function PricingSection() {
             {/* Team size pill */}
             <div className="inline-flex items-center gap-3 rounded-full border border-[#7CC0FF] bg-white pl-5 pr-4 py-2">
               <div className="flex items-center gap-2 text-[#0A7CFF]">
-                <img src="/member.svg" alt="" className="w-6 h-6 shrink-0 object-contain" />
+                <img src="/asset/member.svg" alt="" className="w-6 h-6 shrink-0 object-contain" />
                 <span className="text-xl font-medium">Team</span>
               </div>
 
@@ -265,14 +308,14 @@ export function PricingSection() {
             </div>
 
             {/* Promo caption */}
-            <span className="text-xs font-medium text-slate-900">
+            <span className="text-sm font-medium text-slate-700">
               Get <span className="text-[#0A7CFF]">50%</span> off on yearly plan 🤩
             </span>
           </div>
         </div>
 
-        {/* Pricing cards: recommended plan = dark, slightly taller card */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-x-6 lg:gap-y-10 items-stretch text-left">
+        {/* Pricing cards: 5 items, flex with row 2 centered */}
+        <div className="mt-12 flex flex-wrap justify-center gap-5 lg:gap-6 text-left">
           {PLANS_DATA.map((plan) => {
             const isDark = plan.id === recommendedPlanId
             const price = plan.price[billingCycle]
@@ -280,8 +323,8 @@ export function PricingSection() {
             return (
               <div
                 key={plan.id}
-                className={`rounded-2xl p-8 sm:p-10 flex flex-col transition-all duration-300 ${
-                  isDark ? 'bg-[#0A3A75] text-white' : 'bg-slate-50 text-slate-900 lg:my-4'
+                className={`w-full md:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)] rounded-2xl p-8 sm:p-9 flex flex-col transition-all duration-300 ${
+                  isDark ? 'bg-[#0A3A75] text-white shadow-xl' : 'bg-slate-50 text-slate-900 lg:my-3'
                 }`}
               >
                 <span className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-slate-600'}`}>
@@ -289,7 +332,9 @@ export function PricingSection() {
                 </span>
 
                 <div className="mt-2 flex items-baseline gap-2.5">
-                  <span className="text-[40px] leading-none font-bold tracking-tight">{formatPrice(price)}</span>
+                  <span className="text-[40px] leading-none font-bold tracking-tight">
+                    <PriceDisplay value={price} size="card" />
+                  </span>
                   <span className={`text-base ${isDark ? 'text-white' : 'text-slate-500'}`}>
                     {periodLabel(billingCycle)}
                   </span>
@@ -312,7 +357,7 @@ export function PricingSection() {
 
                 <div className="mt-auto pt-10">
                   <a
-                    href="#cta"
+                    href={`${typeof window !== 'undefined' ? window.location.origin : ''}/daftar?type=${encodeURIComponent(plan.id)}&price=${encodeURIComponent(billingCycle)}`}
                     className={`w-full py-3 px-4 rounded-md text-xs font-medium flex items-center justify-center gap-1.5 transition-colors duration-200 ${
                       isDark
                         ? 'bg-[#0A7CFF] hover:bg-[#006BE6] text-white'
@@ -357,7 +402,7 @@ export function PricingSection() {
                     >
                       <div className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{plan.name}</div>
                       <div className={`mt-0.5 text-base font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                        {formatPrice(plan.price[billingCycle])}
+                        <PriceDisplay value={plan.price[billingCycle]} size="table" />
                       </div>
                       <div className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                         {periodLabel(billingCycle)}

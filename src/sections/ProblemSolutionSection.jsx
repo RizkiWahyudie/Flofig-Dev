@@ -238,14 +238,88 @@ const CARDS = [
 
 /* ---------- Section ---------- */
 export function ProblemSolutionSection() {
+  const [sliderMode, setSliderMode] = useState('split') // 'split' | 'full'
+  const [sliderPos, setSliderPos] = useState(50) // percentage 0 - 100
   const [tab, setTab] = useState('with')
+  const [isDragging, setIsDragging] = useState(false)
   const [headIn, setHeadIn] = useState(() => typeof window !== 'undefined' && !('IntersectionObserver' in window))
   const [gridIn, setGridIn] = useState(() => typeof window !== 'undefined' && !('IntersectionObserver' in window))
+
+  const isDraggingRef = useRef(false)
+  const startXRef = useRef(0)
+  const splitContainerRef = useRef(null)
   const headRef = useRef(null)
   const gridRef = useRef(null)
   const ctaBtnRef = useRef(null)
   const ctaShineRef = useRef(null)
   const ctaArrowRef = useRef(null)
+
+  const handlePointerDown = (e) => {
+    if (sliderMode !== 'split') return
+    isDraggingRef.current = true
+    setIsDragging(true)
+    startXRef.current = e.clientX
+    if (e.target.setPointerCapture) {
+      try {
+        e.target.setPointerCapture(e.pointerId)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+  }
+
+  const handlePointerMove = (e) => {
+    if (!isDraggingRef.current || !splitContainerRef.current) return
+    const rect = splitContainerRef.current.getBoundingClientRect()
+    const offsetX = e.clientX - rect.left
+    const percent = Math.max(0, Math.min(100, (offsetX / rect.width) * 100))
+    setSliderPos(percent)
+  }
+
+  const handlePointerUp = (e) => {
+    if (!isDraggingRef.current) return
+    isDraggingRef.current = false
+    setIsDragging(false)
+    if (e.target.releasePointerCapture) {
+      try {
+        e.target.releasePointerCapture(e.pointerId)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    const deltaX = e.clientX - startXRef.current
+
+    // Geser ke kanan -> Full After Flovig
+    if (sliderPos > 58 || deltaX > 35) {
+      setSliderPos(100)
+      setTab('with')
+      setSliderMode('full')
+    }
+    // Geser ke kiri -> Full Before Flovig
+    else if (sliderPos < 42 || deltaX < -35) {
+      setSliderPos(0)
+      setTab('without')
+      setSliderMode('full')
+    }
+    // Kembalikan ke 50 jika tap tanpa drag yang cukup
+    else {
+      setSliderPos(50)
+    }
+  }
+
+  const handleArrowClick = (dir, e) => {
+    e.stopPropagation()
+    if (dir === 'left') {
+      setSliderPos(0)
+      setTab('without')
+      setSliderMode('full')
+    } else {
+      setSliderPos(100)
+      setTab('with')
+      setSliderMode('full')
+    }
+  }
 
   useEffect(() => {
     if (typeof IntersectionObserver === 'undefined') return
@@ -317,68 +391,191 @@ export function ProblemSolutionSection() {
           </h2>
           <p>Tasks get missed. Updates get lost. Teams lose track of what's happening. Work gets complicated when everything isn't connected.</p>
 
-          <div className="fx-toggle" role="tablist">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === 'with'}
-              className={tab === 'with' ? 'on on-with' : ''}
-              onClick={() => setTab('with')}
-            >
-              After Flovig
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === 'without'}
-              className={tab === 'without' ? 'on on-without' : ''}
-              onClick={() => setTab('without')}
-            >
-              Before Flovig
-            </button>
+          <div className="fx-toggle-wrap">
+            <div className="fx-toggle" role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={sliderMode === 'full' ? tab === 'with' : true}
+                className={
+                  sliderMode === 'full'
+                    ? (tab === 'with' ? 'on on-with' : '')
+                    : 'on on-with'
+                }
+                onClick={() => {
+                  setTab('with')
+                  setSliderMode('full')
+                }}
+              >
+                After Flovig
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={sliderMode === 'full' && tab === 'without'}
+                className={sliderMode === 'full' && tab === 'without' ? 'on on-without' : ''}
+                onClick={() => {
+                  setTab('without')
+                  setSliderMode('full')
+                }}
+              >
+                Before Flovig
+              </button>
+            </div>
+
+            {sliderMode === 'full' && (
+              <button
+                type="button"
+                className="fx-split-reset-btn"
+                onClick={() => {
+                  setSliderPos(50)
+                  setSliderMode('split')
+                }}
+                title="Buka kembali tampilan perbandingan slider"
+              >
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6" />
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+                <span>Lihat Perbandingan (Split View)</span>
+              </button>
+            )}
           </div>
         </header>
 
         <div ref={gridRef}>
-          {tab === 'with' ? (
-            <div className="fx-panel" key="with">
-              <div className="fx-grid">
-                {CARDS.map(({ Viz, ...c }, i) => (
-                  <Card key={c.title} {...c} index={i} visible={gridIn}><Viz /></Card>
-                ))}
+          {sliderMode === 'split' ? (
+            /* Mode Default Awal: Setengah Before dan Setengah After dengan Slider Panah */
+            <div
+              ref={splitContainerRef}
+              className={`fx-split-wrapper ${isDragging ? 'is-dragging' : ''}`}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+            >
+              {/* Layer Kiri: After Flovig */}
+              <div
+                className="fx-split-pane fx-split-pane-after"
+                style={{
+                  clipPath: `inset(0 ${100 - sliderPos}% 0 0)`,
+                  WebkitClipPath: `inset(0 ${100 - sliderPos}% 0 0)`,
+                }}
+              >
+                <div className="fx-grid">
+                  {CARDS.map(({ Viz, ...c }, i) => (
+                    <Card key={c.title} {...c} index={i} visible={gridIn}><Viz /></Card>
+                  ))}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="fx-panel" key="without">
-              <div className="fx-chaos">
-                <svg className="fx-broken" viewBox="0 0 1000 440" preserveAspectRatio="none">
-                  {BROKEN.map((d) => <path key={d} className="fx-bl" d={d} />)}
-                </svg>
-                {FRAGMENTS.map((f) => (
-                  <div className={`fx-frag ${f.cls}`} key={f.cls}>
-                    <span className="fx-fi">{f.icon}</span>
-                    <div>{f.title}<small>{f.sub}</small></div>
-                    {f.warn && <span className="fx-warn">!</span>}
+
+              {/* Layer Kanan: Before Flovig */}
+              <div
+                className="fx-split-pane fx-split-pane-before"
+                style={{
+                  clipPath: `inset(0 0 0 ${sliderPos}%)`,
+                  WebkitClipPath: `inset(0 0 0 ${sliderPos}%)`,
+                }}
+              >
+                <div className="fx-chaos fx-chaos-split">
+                  <svg className="fx-broken" viewBox="0 0 1000 680" preserveAspectRatio="none">
+                    {BROKEN.map((d) => <path key={d} className="fx-bl" d={d} />)}
+                  </svg>
+                  {FRAGMENTS.map((f) => (
+                    <div className={`fx-frag ${f.cls}`} key={f.cls}>
+                      <span className="fx-fi">{f.icon}</span>
+                      <div>{f.title}<small>{f.sub}</small></div>
+                      {f.warn && <span className="fx-warn">!</span>}
+                    </div>
+                  ))}
+                  <div className="fx-lost">
+                    <div className="fx-q">?</div>
+                    <b>Konteks tercecer di banyak tempat</b>
+                    <span>Tim sibuk mencari, bukan mengerjakan.</span>
                   </div>
-                ))}
-                <div className="fx-lost">
-                  <div className="fx-q">?</div>
-                  <b>Konteks tercecer di banyak tempat</b>
-                  <span>Tim sibuk mencari, bukan mengerjakan.</span>
+                </div>
+              </div>
+
+              {/* Divider Line & Panah Kanan-Kiri Slider */}
+              <div
+                className="fx-split-divider"
+                style={{ left: `${sliderPos}%` }}
+              >
+                <div className="fx-split-line" />
+                <div
+                  className="fx-split-handle"
+                  role="slider"
+                  aria-label="Geser ke kanan untuk After Flovig atau ke kiri untuk Before Flovig"
+                  aria-valuenow={Math.round(sliderPos)}
+                  title="Swipe / geser panah ke kanan atau kiri"
+                >
+                  <button
+                    type="button"
+                    className="fx-split-btn fx-split-btn-left"
+                    onClick={(e) => handleArrowClick('left', e)}
+                    title="Tampilkan Before Flovig Full"
+                    aria-label="Before Flovig Full"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    className="fx-split-btn fx-split-btn-right"
+                    onClick={(e) => handleArrowClick('right', e)}
+                    title="Tampilkan After Flovig Full"
+                    aria-label="After Flovig Full"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
+          ) : (
+            /* Mode Full: Tab Switcher Normal */
+            tab === 'with' ? (
+              <div className="fx-panel" key="with">
+                <div className="fx-grid">
+                  {CARDS.map(({ Viz, ...c }, i) => (
+                    <Card key={c.title} {...c} index={i} visible={gridIn}><Viz /></Card>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="fx-panel" key="without">
+                <div className="fx-chaos">
+                  <svg className="fx-broken" viewBox="0 0 1000 440" preserveAspectRatio="none">
+                    {BROKEN.map((d) => <path key={d} className="fx-bl" d={d} />)}
+                  </svg>
+                  {FRAGMENTS.map((f) => (
+                    <div className={`fx-frag ${f.cls}`} key={f.cls}>
+                      <span className="fx-fi">{f.icon}</span>
+                      <div>{f.title}<small>{f.sub}</small></div>
+                      {f.warn && <span className="fx-warn">!</span>}
+                    </div>
+                  ))}
+                  <div className="fx-lost">
+                    <div className="fx-q">?</div>
+                    <b>Konteks tercecer di banyak tempat</b>
+                    <span>Tim sibuk mencari, bukan mengerjakan.</span>
+                  </div>
+                </div>
+              </div>
+            )
           )}
         </div>
 
         <div className={`fx-cta fx-reveal ${gridIn ? 'is-in' : ''}`} style={{ transitionDelay: '200ms' }}>
           <div>
-            <b>Satukan semua kebutuhan tim tanpa fragmentasi alat</b>
-            <span className="fx-cta-sub">Project, task, komunikasi, dan report dalam satu workspace.</span>
+            <b>Less Tool Switching. More Team Progress.</b>
+            <span className="fx-cta-sub">Bring projects, tasks, communication, and reporting together in one seamless workspace.</span>
           </div>
           <a ref={ctaBtnRef} href="#cara-kerja" className="fx-cta-btn">
             <span ref={ctaShineRef} className="fx-cta-shine" />
-            <span style={{ color: '#ffffff' }}>Pelajari Alur Kerja</span>
+            <span style={{ color: '#ffffff' }}>Discover the Workflow</span>
             <span ref={ctaArrowRef} className="fx-cta-arrow" style={{ display: 'inline-flex', alignItems: 'center', color: '#ffffff' }}>
               <ArrowRight size={16} strokeWidth={2.5} />
             </span>
@@ -430,11 +627,35 @@ const CSS = `
 .fx-head p{color:var(--fx-dim);font-size:16px;line-height:1.65;margin:0}
 
 /* toggle */
-.fx-toggle{display:inline-flex;gap:10px;padding:0;margin-top:28px;border:none;border-radius:9999px;background:transparent;flex-wrap:wrap;justify-content:center;box-shadow:none}
+.fx-toggle-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:28px}
+.fx-toggle{display:inline-flex;gap:10px;padding:0;margin:0;border:none;border-radius:9999px;background:transparent;flex-wrap:wrap;justify-content:center;box-shadow:none}
 .fx-toggle button{font:inherit;font-size:13.5px;font-weight:600;color:#475569;background:#ffffff;border:1px solid #cbd5e1;padding:8px 24px;border-radius:9999px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s var(--fx-ease);box-shadow:0 1px 3px rgba(15,23,42,.04)}
 .fx-toggle button:not(.on):hover{color:#0f172a;border-color:#94a3b8;background:#f8fafc;transform:translateY(-1px)}
 .fx-toggle button.on.on-with{background:linear-gradient(90deg,#0099FF 0%,#00C2FF 100%);color:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(0,153,255,.35)}
 .fx-toggle button.on.on-without{background:linear-gradient(90deg,#ef4444 0%,#f97316 50%,#f59e0b 100%);color:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(239,68,68,.35)}
+.fx-split-reset-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#0088ee;background:transparent;padding:6px 14px;border-radius:999px;cursor:pointer;transition:all .2s var(--fx-ease)}
+.fx-split-reset-btn:hover{background:rgba(0,153,255,.0.5);color:#0070cc;transform:translateY(-1px)}
+
+/* split comparison slider */
+.fx-split-wrapper{position:relative;width:100%;overflow:hidden;user-select:none;touch-action:pan-y;background:#ffffff;}
+.fx-split-wrapper.is-dragging{cursor:ew-resize}
+.fx-split-pane{width:100%}
+.fx-split-pane-after{position:relative;z-index:1}
+.fx-split-pane-before{position:absolute;inset:0;width:100%;height:100%;z-index:2;background:#ffffff}
+.fx-chaos-split{height:100%!important;min-height:100%!important}
+.fx-chaos-split .fx-lost{left:72%;top:50%;transform:translate(-50%,-50%);max-width:280px;width:86%;z-index:10}
+.fx-chaos-split .fx-frag.f2{left:62%;top:12%;z-index:6}
+.fx-chaos-split .fx-frag.f5{left:64%;bottom:16%;z-index:6}
+.fx-chaos-split .fx-frag.f3{right:4%;top:10%;z-index:6}
+.fx-chaos-split .fx-frag.f6{right:6%;bottom:14%;z-index:6}
+.fx-split-divider{position:absolute;top:0;bottom:0;width:0;z-index:30;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.fx-split-line{position:absolute;top:0;bottom:0;width:2.5px;background:linear-gradient(180deg,#00C2FF 0%,#0099FF 50%,#0077EE 100%);box-shadow:0 0 12px rgba(0,153,255,.65),0 0 3px rgba(0,153,255,.9)}
+.fx-split-handle{position:absolute;top:51%;left:72%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#00A3FF 0%,#007BE5 100%);box-shadow:0 4px 18px rgba(0,136,255,.5),0 0 0 3px #ffffff;display:flex;align-items:center;justify-content:center;gap:1px;color:#ffffff;cursor:ew-resize;pointer-events:auto;transition:transform .2s var(--fx-ease),box-shadow .2s;animation:fx-handleGlow 2.5s infinite}
+.fx-split-handle:hover{transform:translate(-50%,-50%) scale(1.1);box-shadow:0 6px 24px rgba(0,136,255,.7),0 0 0 4px #ffffff}
+@keyframes fx-handleGlow{0%,100%{box-shadow:0 4px 18px rgba(0,136,255,.5),0 0 0 3px #ffffff}50%{box-shadow:0 4px 26px rgba(0,136,255,.75),0 0 0 4px rgba(255,255,255,.95)}}
+.fx-split-btn{background:transparent;border:none;color:#ffffff;padding:4px 3px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:4px;transition:background .15s}
+.fx-split-btn:hover{background:rgba(255,255,255,.15)}
+.fx-split-btn svg{width:13px;height:13px;stroke-width:2.8}
 
 .fx-panel{animation:fx-panelIn .5s var(--fx-ease)}
 @keyframes fx-panelIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
@@ -657,6 +878,12 @@ const CSS = `
   .fx-chaos{height:520px}
   .fx-frag.f1{left:4%;top:4%}.fx-frag.f2{left:auto;right:4%;top:20%}.fx-frag.f3{left:4%;right:auto;top:36%}
   .fx-frag.f4{left:auto;right:4%;bottom:30%}.fx-frag.f5{left:4%;bottom:14%}.fx-frag.f6{right:4%;bottom:2%}
+  .fx-chaos-split .fx-lost{left:66%;top:50%;padding:10px 14px;max-width:180px}
+  .fx-chaos-split .fx-lost b{font-size:12px}
+  .fx-chaos-split .fx-lost span{font-size:10px}
+  .fx-chaos-split .fx-frag{padding:6px 10px;font-size:10px}
+  .fx-split-handle{width:38px;height:38px}
+  .fx-split-btn svg{width:11px;height:11px}
   .fx-cta{flex-wrap:wrap}.fx-cta-btn{margin-left:0;width:100%;justify-content:center}
 }
 @media (prefers-reduced-motion:reduce){

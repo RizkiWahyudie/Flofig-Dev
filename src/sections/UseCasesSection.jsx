@@ -237,7 +237,7 @@ export function UseCasesSection() {
                   {/* FREE Badge from SVG */}
                   <div className="absolute -top-5 -right-4 pointer-events-none select-none">
                     <img
-                      src="/free.svg"
+                      src="/asset/free.svg"
                       alt="Free"
                       className="w-11 h-11 sm:w-14 sm:h-14 object-contain drop-shadow-md"
                     />
