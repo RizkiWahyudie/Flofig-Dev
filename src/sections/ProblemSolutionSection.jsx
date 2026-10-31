@@ -244,6 +244,7 @@ export function ProblemSolutionSection() {
   const [gridIn, setGridIn] = useState(() => typeof window !== 'undefined' && !('IntersectionObserver' in window))
 
   const isDraggingRef = useRef(false)
+  const hasDraggedRef = useRef(false)
   const startXRef = useRef(0)
   const splitContainerRef = useRef(null)
   const headRef = useRef(null)
@@ -254,11 +255,12 @@ export function ProblemSolutionSection() {
 
   const handlePointerDown = (e) => {
     isDraggingRef.current = true
+    hasDraggedRef.current = false
     setIsDragging(true)
     startXRef.current = e.clientX
-    if (e.target.setPointerCapture) {
+    if (e.currentTarget.setPointerCapture) {
       try {
-        e.target.setPointerCapture(e.pointerId)
+        e.currentTarget.setPointerCapture(e.pointerId)
       } catch (err) {
         console.error(err)
       }
@@ -267,9 +269,13 @@ export function ProblemSolutionSection() {
 
   const handlePointerMove = (e) => {
     if (!isDraggingRef.current || !splitContainerRef.current) return
+    const diff = Math.abs(e.clientX - startXRef.current)
+    if (diff > 4) {
+      hasDraggedRef.current = true
+    }
     const rect = splitContainerRef.current.getBoundingClientRect()
     const offsetX = e.clientX - rect.left
-    const percent = Math.max(2.5, Math.min(97.5, (offsetX / rect.width) * 100))
+    const percent = Math.max(0, Math.min(100, (offsetX / rect.width) * 100))
     setSliderPos(percent)
   }
 
@@ -277,32 +283,42 @@ export function ProblemSolutionSection() {
     if (!isDraggingRef.current) return
     isDraggingRef.current = false
     setIsDragging(false)
-    if (e.target.releasePointerCapture) {
+    if (e.currentTarget && e.currentTarget.releasePointerCapture) {
       try {
-        e.target.releasePointerCapture(e.pointerId)
+        e.currentTarget.releasePointerCapture(e.pointerId)
       } catch (err) {
-        console.error(err)
+        // ignore
       }
     }
 
     const deltaX = e.clientX - startXRef.current
 
-    // Snap halus ke ujung jika dilepas di dekat ujung atau swipe cepat
-    if (sliderPos > 80 || (deltaX > 40 && sliderPos > 55)) {
-      setSliderPos(97.5)
-    } else if (sliderPos < 20 || (deltaX < -40 && sliderPos < 45)) {
-      setSliderPos(2.4)
+    // Geser hingga dekat tepi atau flick cepat ke arah tepi -> snap ke full
+    if (sliderPos >= 82 || (deltaX > 60 && sliderPos > 65)) {
+      setSliderPos(100)
+    } else if (sliderPos <= 18 || (deltaX < -60 && sliderPos < 35)) {
+      setSliderPos(0)
     }
+
+    // Reset hasDragged setelah click event browser selesai diproses
+    setTimeout(() => {
+      hasDraggedRef.current = false
+    }, 150)
   }
 
-  const handleHandleClick = () => {
-    // Klik pada handle bulat saat di tepi untuk beralih arah
-    if (sliderPos >= 85) {
-      // Sedang di kanan (After Flovig full) -> geser ke Before Flovig
-      setSliderPos(2.4)
-    } else if (sliderPos <= 15) {
-      // Sedang di kiri (Before Flovig full) -> geser ke After Flovig
-      setSliderPos(97.5)
+  const handleHandleClick = (e) => {
+    // Jika aksi sebelumnya adalah drag/geser, jangan toggle arah click!
+    if (hasDraggedRef.current) {
+      return
+    }
+
+    // Klik murni pada handle saat di tepi untuk toggle
+    if (sliderPos >= 80) {
+      // Sedang di kanan -> klik untuk geser ke kiri (Before Flovig)
+      setSliderPos(0)
+    } else if (sliderPos <= 20) {
+      // Sedang di kiri -> klik untuk geser ke kanan (After Flovig)
+      setSliderPos(100)
     }
   }
 
@@ -370,6 +386,11 @@ export function ProblemSolutionSection() {
     return () => ctx.revert()
   }, [])
 
+  // Posisi garis dan batas klip agar handle bulat (diameter 44px) tidak terpotong di tepi kontainer
+  const linePosition = sliderPos >= 85 ? 'calc(100% - 26px)' : sliderPos <= 15 ? '26px' : `${sliderPos}%`
+  const clipAfter = sliderPos >= 85 ? '26px' : sliderPos <= 15 ? 'calc(100% - 26px)' : `${100 - sliderPos}%`
+  const clipBefore = sliderPos >= 85 ? 'calc(100% - 26px)' : sliderPos <= 15 ? '26px' : `${sliderPos}%`
+
   return (
     <section className="fx" id="alur-kerja">
       <style>{CSS}</style>
@@ -398,7 +419,7 @@ export function ProblemSolutionSection() {
                 role="tab"
                 aria-selected={sliderPos >= 50}
                 className={sliderPos >= 50 ? 'on on-with' : ''}
-                onClick={() => setSliderPos(97.5)}
+                onClick={() => setSliderPos(100)}
               >
                 After Flovig
               </button>
@@ -407,26 +428,11 @@ export function ProblemSolutionSection() {
                 role="tab"
                 aria-selected={sliderPos < 50}
                 className={sliderPos < 50 ? 'on on-without' : ''}
-                onClick={() => setSliderPos(2.4)}
+                onClick={() => setSliderPos(0)}
               >
                 Before Flovig
               </button>
             </div>
-
-            {/* {(sliderPos > 75 || sliderPos < 25) && (
-              <button
-                type="button"
-                className="fx-split-reset-btn"
-                onClick={() => setSliderPos(50)}
-                title="Bagi tampilan perbandingan 50:50 di tengah"
-              >
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="15 18 9 12 15 6" />
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-                <span>Bagi Dua (50:50)</span>
-              </button>
-            )} */}
           </div>
         </header>
 
@@ -444,8 +450,8 @@ export function ProblemSolutionSection() {
             <div
               className="fx-split-pane fx-split-pane-after"
               style={{
-                clipPath: `inset(0 ${100 - sliderPos}% 0 0)`,
-                WebkitClipPath: `inset(0 ${100 - sliderPos}% 0 0)`,
+                clipPath: `inset(0 ${clipAfter} 0 0)`,
+                WebkitClipPath: `inset(0 ${clipAfter} 0 0)`,
                 transition: isDragging ? 'none' : 'clip-path 0.6s cubic-bezier(0.22, 1, 0.36, 1), -webkit-clip-path 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
               }}
             >
@@ -460,8 +466,8 @@ export function ProblemSolutionSection() {
             <div
               className="fx-split-pane fx-split-pane-before"
               style={{
-                clipPath: `inset(0 0 0 ${sliderPos}%)`,
-                WebkitClipPath: `inset(0 0 0 ${sliderPos}%)`,
+                clipPath: `inset(0 0 0 ${clipBefore})`,
+                WebkitClipPath: `inset(0 0 0 ${clipBefore})`,
                 transition: isDragging ? 'none' : 'clip-path 0.6s cubic-bezier(0.22, 1, 0.36, 1), -webkit-clip-path 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
               }}
             >
@@ -488,7 +494,7 @@ export function ProblemSolutionSection() {
             <div
               className="fx-split-divider"
               style={{
-                left: `${sliderPos}%`,
+                left: linePosition,
                 transition: isDragging ? 'none' : 'left 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
               }}
             >
@@ -518,36 +524,14 @@ export function ProblemSolutionSection() {
                     <polyline points="9 18 15 12 9 6" />
                   </svg>
                 ) : (
-                  /* Di tengah: dua panah kiri-kanan < > */
-                  <div className="fx-split-handle-duo">
-                    <button
-                      type="button"
-                      className="fx-split-btn fx-split-btn-left"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setSliderPos(2.4)
-                      }}
-                      title="Geser penuh ke Before Flovig"
-                      aria-label="Before Flovig Full"
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="15 18 9 12 15 6" />
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      className="fx-split-btn fx-split-btn-right"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setSliderPos(97.5)
-                      }}
-                      title="Geser penuh ke After Flovig"
-                      aria-label="After Flovig Full"
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="9 18 15 12 9 6" />
-                      </svg>
-                    </button>
+                  /* Di tengah: dua panah kiri-kanan < > (indikator visual) */
+                  <div className="fx-split-handle-duo" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
                   </div>
                 )}
               </div>
@@ -642,14 +626,12 @@ const CSS = `
 .fx-chaos-split.is-full-chaos .fx-frag.f6{right:8%;bottom:18%}
 .fx-split-divider{position:absolute;top:0;bottom:0;width:0;z-index:30;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .fx-split-line{position:absolute;top:0;bottom:0;width:2.5px;background:linear-gradient(180deg,#00C2FF 0%,#0099FF 50%,#0077EE 100%);box-shadow:0 0 12px rgba(0,153,255,.65),0 0 3px rgba(0,153,255,.9)}
-.fx-split-handle{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#00A3FF 0%,#007BE5 100%);box-shadow:0 4px 18px rgba(0,136,255,.5),0 0 0 3px #ffffff;display:flex;align-items:center;justify-content:center;color:#ffffff;cursor:ew-resize;pointer-events:auto;transition:transform .2s var(--fx-ease),box-shadow .2s;animation:fx-handleGlow 2.5s infinite;z-index:35}
-.fx-split-handle:hover{transform:translate(-50%,-50%) scale(1.1);box-shadow:0 6px 24px rgba(0,136,255,.7),0 0 0 4px #ffffff}
+.fx-split-handle{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#00A3FF 0%,#007BE5 100%);box-shadow:0 4px 18px rgba(0,136,255,.5),0 0 0 3px #ffffff;display:flex;align-items:center;justify-content:center;color:#ffffff;cursor:ew-resize;pointer-events:auto;transition:transform .2s var(--fx-ease),box-shadow .2s;animation:fx-handleGlow 2.5s infinite;z-index:35;touch-action:none}
+.fx-split-handle:hover{transform:translate(-50%,-50%) scale(1.08);box-shadow:0 6px 24px rgba(0,136,255,.7),0 0 0 4px #ffffff}
 .fx-split-handle.is-edge{cursor:pointer}
-.fx-split-handle svg{width:18px;height:18px;stroke-width:2.8;color:#ffffff;flex-shrink:0}
-.fx-split-handle-duo{display:flex;align-items:center;justify-content:center;gap:1px}
-.fx-split-btn{background:transparent;border:none;color:#ffffff;padding:3px 2px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:4px;transition:background .15s}
-.fx-split-btn:hover{background:rgba(255,255,255,.2)}
-.fx-split-btn svg{width:14px;height:14px;stroke-width:2.8}
+.fx-split-handle svg{width:18px;height:18px;stroke-width:2.8;color:#ffffff;flex-shrink:0;pointer-events:none}
+.fx-split-handle-duo{display:flex;align-items:center;justify-content:center;gap:2px;pointer-events:none}
+.fx-split-handle-duo svg{width:13px;height:13px;stroke-width:2.8;color:#ffffff}
 
 .fx-panel{animation:fx-panelIn .5s var(--fx-ease)}
 @keyframes fx-panelIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
